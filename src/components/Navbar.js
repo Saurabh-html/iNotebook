@@ -12,7 +12,7 @@ const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
 
   const handleLogout = () => {
     localStorage.removeItem(config.TOKEN_KEY);
-    setUser(null); // ✅ reset user
+    setUser(null);
     navigate("/login");
   };
 
@@ -33,7 +33,6 @@ const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
     }
   };
 
-  // ✅ KEY FIX: run whenever token changes
   useEffect(() => {
     if (token) {
       getUserDetails();
@@ -94,20 +93,15 @@ const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
               </div>
             )}
 
-            {/* RIGHT */}
-            {!token ? (
-              <div className="d-flex">
-                <Link className="btn btn-primary mx-1" to="/login">Login</Link>
-                <Link className="btn btn-primary mx-1" to="/signup">Signup</Link>
-              </div>
-            ) : (
+            {/* RIGHT → ONLY PROFILE WHEN LOGGED IN */}
+            {token && (
               <div className="d-flex">
                 <button
                   className="btn btn-outline-light mx-2"
                   data-bs-toggle="offcanvas"
                   data-bs-target="#profileSidebar"
                 >
-                  Your Profile {/* ✅ changed */}
+                  Your Profile
                 </button>
               </div>
             )}
