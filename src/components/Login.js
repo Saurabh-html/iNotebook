@@ -20,11 +20,17 @@ const Login = (props) => {
       })
     });
 
-    const json = await response.json();
+    let json;
+    try {
+      json = await response.json();
+    } catch {
+      props.showAlert("Server error", "danger");
+      return;
+    }
 
     if (json.authtoken) {
       localStorage.setItem(config.TOKEN_KEY, json.authtoken);
-      navigate("/", {replace: true});
+      navigate("/");
       props.showAlert("Logged in Successfully", "success");
     } else {
       props.showAlert("Invalid Details", "danger");
@@ -50,12 +56,26 @@ const Login = (props) => {
           <input type="password" className="form-control" name="password" value={credentials.password} onChange={onChange} />
         </div>
 
-        <div className="mb-3">
+        {/* Forgot Password */}
+        <div className="mb-2">
           <small
             style={{ cursor: "pointer", color: "blue" }}
             onClick={() => navigate("/forgotpassword")}
           >
             Forgot Password?
+          </small>
+        </div>
+
+        {/* NEW LINE ADDED 👇 */}
+        <div className="mb-3">
+          <small>
+            New user?{" "}
+            <span
+              style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}
+              onClick={() => navigate("/signup")}
+            >
+              Sign Up
+            </span>
           </small>
         </div>
 
