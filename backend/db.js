@@ -6,8 +6,8 @@ const connectToMongo = async () => {
     console.log("Connected to Mongo Successfully");
   } catch (error) {
     console.error(error);
-    process.exit(1); // fail fast (production safe)
+    process.exit(1);
   }
-}
+};
 
 module.exports = connectToMongo;
