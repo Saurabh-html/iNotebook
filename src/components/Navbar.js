@@ -33,24 +33,21 @@ const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
   };
 
   useEffect(() => {
-  if (token) {
-    getUserDetails();
-  } else {
-    setUser(null);
-  }
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [token]);
+    if (token) getUserDetails();
+    else setUser(null);
+    // eslint-disable-next-line
+  }, [token]);
 
   return (
     <>
-      <nav className="navbar navbar-dark bg-dark px-3">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
 
-        {/* LEFT */}
-        <Link className="navbar-brand me-3" to="/">iNotebook</Link>
+        {/* BRAND */}
+        <Link className="navbar-brand" to="/">iNotebook</Link>
 
-        {/* SEARCH ALWAYS VISIBLE */}
+        {/* SEARCH BAR (ALWAYS VISIBLE) */}
         {token && location.pathname !== "/about" && (
-          <div className="flex-grow-1 me-2">
+          <div className="mx-3 flex-grow-1" style={{ maxWidth: "500px" }}>
             <div className="input-group">
 
               <input
@@ -63,7 +60,7 @@ const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
 
               <select
                 className="form-select"
-                style={{ maxWidth: "90px" }}
+                style={{ maxWidth: "100px" }}
                 value={searchType}
                 onChange={(e) => setSearchType(e.target.value)}
               >
@@ -75,17 +72,47 @@ const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
           </div>
         )}
 
-        {/* RIGHT → AVATAR */}
-        {token && (
-          <button
-            className="btn btn-outline-light"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#profileSidebar"
-            style={{ borderRadius: "50%", width: "40px", height: "40px" }}
-          >
-            👤
-          </button>
-        )}
+        {/* HAMBURGER */}
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarContent"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        {/* COLLAPSE MENU */}
+        <div className="collapse navbar-collapse" id="navbarContent">
+
+          <ul className="navbar-nav ms-auto">
+
+            <li className="nav-item">
+              <Link className={`nav-link ${location.pathname === "/" ? "active" : ""}`} to="/">Home</Link>
+            </li>
+
+            <li className="nav-item">
+              <Link className={`nav-link ${location.pathname === "/about" ? "active" : ""}`} to="/about">About</Link>
+            </li>
+
+            {/* PROFILE SECTION */}
+            {token && (
+              <li className="nav-item mt-2 mt-lg-0 ms-lg-3">
+
+                <button
+                  className="btn btn-outline-light"
+                  data-bs-toggle="offcanvas"
+                  data-bs-target="#profileSidebar"
+                >
+                  Profile
+                </button>
+
+              </li>
+            )}
+
+          </ul>
+
+        </div>
 
       </nav>
 
