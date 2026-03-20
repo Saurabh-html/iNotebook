@@ -7,7 +7,6 @@ const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
   let location = useLocation();
 
   const [user, setUser] = useState(null);
-
   const token = localStorage.getItem(config.TOKEN_KEY);
 
   const handleLogout = () => {
@@ -22,7 +21,7 @@ const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem(config.TOKEN_KEY)
+          'auth-token': token
         }
       });
 
@@ -34,83 +33,59 @@ const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
   };
 
   useEffect(() => {
-    if (token) {
-      getUserDetails();
-    } else {
-      setUser(null);
-    }
+    if (token) getUserDetails();
+    else setUser(null);
   }, [token]);
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div className="container-fluid">
+      <nav className="navbar navbar-dark bg-dark px-3">
 
-          <Link className="navbar-brand" to="/">iNotebook</Link>
+        {/* LEFT */}
+        <Link className="navbar-brand me-3" to="/">iNotebook</Link>
 
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
-            <span className="navbar-toggler-icon"></span>
-          </button>
+        {/* SEARCH ALWAYS VISIBLE */}
+        {token && location.pathname !== "/about" && (
+          <div className="flex-grow-1 me-2">
+            <div className="input-group">
 
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
 
-            {/* LEFT */}
-            <ul className="navbar-nav me-auto">
-              <li className="nav-item">
-                <Link className={`nav-link ${location.pathname === "/" ? "active" : ""}`} to="/">Home</Link>
-              </li>
+              <select
+                className="form-select"
+                style={{ maxWidth: "90px" }}
+                value={searchType}
+                onChange={(e) => setSearchType(e.target.value)}
+              >
+                <option value="title">Title</option>
+                <option value="tag">Tag</option>
+              </select>
 
-              <li className="nav-item">
-                <Link className={`nav-link ${location.pathname === "/about" ? "active" : ""}`} to="/about">About</Link>
-              </li>
-            </ul>
-
-            {/* SEARCH */}
-            {token && location.pathname !== "/about" && (
-              <div className="d-flex align-items-center me-3" style={{ maxWidth: "400px" }}>
-                <div className="input-group">
-
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Search your notes by..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-
-                  <span className="input-group-text p-0">
-                    <select
-                      className="form-select border-0"
-                      value={searchType}
-                      onChange={(e) => setSearchType(e.target.value)}
-                    >
-                      <option value="title">Title</option>
-                      <option value="tag">Tag</option>
-                    </select>
-                  </span>
-
-                </div>
-              </div>
-            )}
-
-            {/* RIGHT → ONLY PROFILE WHEN LOGGED IN */}
-            {token && (
-              <div className="d-flex">
-                <button
-                  className="btn btn-outline-light mx-2"
-                  data-bs-toggle="offcanvas"
-                  data-bs-target="#profileSidebar"
-                >
-                  Your Profile
-                </button>
-              </div>
-            )}
-
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* RIGHT → AVATAR */}
+        {token && (
+          <button
+            className="btn btn-outline-light"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#profileSidebar"
+            style={{ borderRadius: "50%", width: "40px", height: "40px" }}
+          >
+            👤
+          </button>
+        )}
+
       </nav>
 
-      {/* Sidebar */}
+      {/* SIDEBAR */}
       <div className="offcanvas offcanvas-end d-flex flex-column" id="profileSidebar">
 
         <div className="offcanvas-header">
