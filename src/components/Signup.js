@@ -17,7 +17,6 @@ const Signup = (props) => {
 
     const { name, email, password, cpassword } = credentials;
 
-    // Optional safety (no UI change)
     if (password !== cpassword) {
       props.showAlert("Passwords do not match", "danger");
       return;
@@ -35,7 +34,7 @@ const Signup = (props) => {
 
     if (json.success) {
       localStorage.setItem(config.TOKEN_KEY, json.authtoken);
-      navigate("/", {replace: true});
+      navigate("/");
       props.showAlert("Account Created Successfully", "success");
     } else {
       props.showAlert("Invalid Credentials", "danger");
@@ -69,6 +68,19 @@ const Signup = (props) => {
         <div className="mb-3">
           <label className="form-label">Confirm Password</label>
           <input type="password" className="form-control" name="cpassword" onChange={onChange} minLength={5} required />
+        </div>
+
+        {/* 👇 NEW LOGIN LINK */}
+        <div className="mb-3">
+          <small>
+            Already a user?{" "}
+            <span
+              style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </span>
+          </small>
         </div>
 
         <button type="submit" className="btn btn-primary">Submit</button>
