@@ -33,9 +33,13 @@ const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
   };
 
   useEffect(() => {
-    if (token) getUserDetails();
-    else setUser(null);
-  }, [token]);
+  if (token) {
+    getUserDetails();
+  } else {
+    setUser(null);
+  }
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [token]);
 
   return (
     <>
