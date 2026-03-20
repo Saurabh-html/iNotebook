@@ -59,6 +59,17 @@ const ForgotPassword = (props) => {
           <input type="password" className="form-control" name="cpassword" onChange={onChange} required />
         </div>
 
+        <div className="mb-3">
+          <small>
+            <span
+              style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </span>
+          </small>
+        </div>
+
         <button type="submit" className="btn btn-primary">Update Password</button>
       </form>
     </div>
