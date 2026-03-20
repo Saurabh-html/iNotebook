@@ -1,4 +1,4 @@
-require('dotenv').config({ path: './backend/.env' });
+require('dotenv').config(); // ✅ FIXED
 
 const connectToMongo = require('./db');
 connectToMongo();
@@ -18,6 +18,11 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/notes', require('./routes/notes'));
+
+// Root route (for testing)
+app.get('/', (req, res) => {
+  res.send('iNotebook Backend Running ✅');
+});
 
 // Start server
 app.listen(port, () => {
