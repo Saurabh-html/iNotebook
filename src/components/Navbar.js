@@ -40,81 +40,83 @@ const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+      <nav className="navbar navbar-dark bg-dark px-3">
 
-        {/* BRAND */}
-        <Link className="navbar-brand" to="/">iNotebook</Link>
+  {/* ROW 1 → BRAND + HAMBURGER */}
+  <div className="d-flex justify-content-between align-items-center w-100">
 
-        {/* SEARCH BAR (ALWAYS VISIBLE) */}
-        {token && location.pathname !== "/about" && (
-          <div className="mx-3 flex-grow-1" style={{ maxWidth: "500px" }}>
-            <div className="input-group">
+    <Link className="navbar-brand mb-0" to="/">iNotebook</Link>
 
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+    <button
+      className="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarContent"
+    >
+      <span className="navbar-toggler-icon"></span>
+    </button>
 
-              <select
-                className="form-select"
-                style={{ maxWidth: "100px" }}
-                value={searchType}
-                onChange={(e) => setSearchType(e.target.value)}
-              >
-                <option value="title">Title</option>
-                <option value="tag">Tag</option>
-              </select>
+  </div>
 
-            </div>
-          </div>
-        )}
+  {/* ROW 2 → SEARCH BAR */}
+  {token && location.pathname !== "/about" && (
+    <div className="w-100 mt-2">
+      <div className="input-group">
 
-        {/* HAMBURGER */}
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarContent"
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <select
+          className="form-select"
+          style={{ maxWidth: "100px" }}
+          value={searchType}
+          onChange={(e) => setSearchType(e.target.value)}
         >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+          <option value="title">Title</option>
+          <option value="tag">Tag</option>
+        </select>
 
-        {/* COLLAPSE MENU */}
-        <div className="collapse navbar-collapse" id="navbarContent">
+      </div>
+    </div>
+  )}
 
-          <ul className="navbar-nav ms-auto">
+  {/* COLLAPSE MENU */}
+  <div className="collapse navbar-collapse mt-2" id="navbarContent">
 
-            <li className="nav-item">
-              <Link className={`nav-link ${location.pathname === "/" ? "active" : ""}`} to="/">Home</Link>
-            </li>
+    <ul className="navbar-nav ms-auto">
 
-            <li className="nav-item">
-              <Link className={`nav-link ${location.pathname === "/about" ? "active" : ""}`} to="/about">About</Link>
-            </li>
+      <li className="nav-item">
+        <Link className={`nav-link ${location.pathname === "/" ? "active" : ""}`} to="/">Home</Link>
+      </li>
 
-            {/* PROFILE SECTION */}
-            {token && (
-              <li className="nav-item mt-2 mt-lg-0 ms-lg-3">
+      <li className="nav-item">
+        <Link className={`nav-link ${location.pathname === "/about" ? "active" : ""}`} to="/about">About</Link>
+      </li>
 
-                <button
-                  className="btn btn-outline-light"
-                  data-bs-toggle="offcanvas"
-                  data-bs-target="#profileSidebar"
-                >
-                  Profile
-                </button>
+      {token && (
+        <li className="nav-item mt-2">
 
-              </li>
-            )}
+          <button
+            className="btn btn-outline-light"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#profileSidebar"
+          >
+            Profile
+          </button>
 
-          </ul>
+        </li>
+      )}
 
-        </div>
+    </ul>
 
-      </nav>
+  </div>
+
+</nav>
 
       {/* SIDEBAR */}
       <div className="offcanvas offcanvas-end d-flex flex-column" id="profileSidebar">
