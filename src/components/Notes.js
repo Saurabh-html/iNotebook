@@ -9,8 +9,7 @@ const Notes = (props) => {
   const context = useContext(noteContext);
   let navigate = useNavigate();
 
-
-  const { notes = [], getNotes, editNote } = context; // ✅ safe default
+  const { notes = [], getNotes, editNote } = context;
 
   useEffect(() => {
     const token = localStorage.getItem(config.TOKEN_KEY);
@@ -30,7 +29,7 @@ const Notes = (props) => {
     etag: ""
   });
 
-    const[selectedNote, setSelectedNote]= useState(null);
+  const [selectedNote, setSelectedNote] = useState(null);
 
   const ref = useRef(null);
   const refClose = useRef(null);
@@ -55,7 +54,16 @@ const Notes = (props) => {
     setNote({ ...note, [e.target.name]: e.target.value });
   };
 
-  // ✅ SAFE FILTERING (handles both string & array tags)
+  // 🔥 Prevent background scroll when modal open
+  useEffect(() => {
+    if (selectedNote) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [selectedNote]);
+
+  // ✅ FILTER
   const filteredNotes = (notes || []).filter((n) => {
     if (!props.search) return true;
 
@@ -82,7 +90,7 @@ const Notes = (props) => {
     <>
       <AddNote showAlert={props.showAlert} />
 
-      {/* Hidden button for modal */}
+      {/* Hidden button for edit modal */}
       <button
         ref={ref}
         type="button"
@@ -93,10 +101,10 @@ const Notes = (props) => {
         Launch modal
       </button>
 
-      {/* Modal */}
+      {/* EDIT MODAL */}
       <div className="modal fade" id="exampleModal" tabIndex="-1">
         <div className="modal-dialog">
-          <div className="modal-content">
+          <div className={`modal-content ${props.mode === "dark" ? "bg-dark text-light" : ""}`}>
 
             <div className="modal-header">
               <h5 className="modal-title">Edit Note</h5>
@@ -147,7 +155,7 @@ const Notes = (props) => {
         </div>
       </div>
 
-      {/* Notes List */}
+      {/* NOTES LIST */}
       <div className="row my-3">
         <h2>Your Notes</h2>
 
@@ -157,6 +165,7 @@ const Notes = (props) => {
 
         {filteredNotes.map((n) => (
           <NoteItem
+            mode={props.mode}
             key={n._id}
             updateNote={updateNote}
             showAlert={props.showAlert}
@@ -165,28 +174,56 @@ const Notes = (props) => {
           />
         ))}
       </div>
+
+      {/* 🔥 BLUR BACKGROUND */}
       {selectedNote && (
-  <div className="modal show d-block" tabIndex="-1">
-    <div className="modal-dialog">
-      <div className="modal-content">
+        <div
+          className="blur-overlay"
+          onClick={() => setSelectedNote(null)}
+        ></div>
+      )}
 
-        <div className="modal-header">
-          <h5 className="modal-title">{selectedNote.title}</h5>
-          <i
-            className="fa-solid fa-xmark"
-            style={{ cursor: "pointer", fontSize: "20px" }}
-            onClick={() => setSelectedNote(null)}
-          ></i>
+      {/* 🔥 VIEW NOTE MODAL */}
+      {selectedNote && (
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 1050
+          }}
+        >
+          <div
+            className={`card p-3 ${props.mode === "dark" ? "bg-dark text-light border-secondary" : ""}`}
+            style={{
+              width: "90%",
+              maxWidth: "500px"
+            }}
+          >
+
+            {/* 🔥 HEADER FIXED */}
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <h5 className="mb-0">{selectedNote.title}</h5>
+
+              <i
+                className="fa-solid fa-xmark"
+                style={{ cursor: "pointer", fontSize: "20px" }}
+                onClick={() => setSelectedNote(null)}
+              ></i>
+            </div>
+
+            <hr />
+
+            <p style={{ whiteSpace: "pre-wrap" }}>
+              {selectedNote.description}
+            </p>
+
+          </div>
         </div>
-
-        <div className="modal-body">
-          <p>{selectedNote.description}</p>
-        </div>
-
-      </div>
-    </div>
-  </div>
-)}
+      )}
     </>
   );
 };
