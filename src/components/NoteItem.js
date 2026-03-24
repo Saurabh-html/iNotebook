@@ -36,7 +36,7 @@ const formatTime = (date) => {
   return (
     <div className="col-md-3" onClick={()=>props.openNote(note)} style={{cursor:"pointer"}}>
 
-      <div className="card my-3">
+      <div className={`card my-3 ${props.mode==="dark"? "bg-dark text-light border-secondary" : ""}`}>
         <div className="card-body" >
 
           <div className="d-flex justify-content-between text-muted" style={{fontsize:"12px"}}>
@@ -79,7 +79,7 @@ const formatTime = (date) => {
                 </span>
               ))
             ) : (
-              <span className="badge bg-secondary">General</span>
+              <span className={`badge ${props.mode==="dark"?"bg-light text-dark":"bg-primary"}`}>General</span>
             )}
           </div>
 
