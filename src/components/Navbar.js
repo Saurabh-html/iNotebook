@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import config from "../config";
 
-const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
+const Navbar = ({ search, setSearch, searchType, setSearchType, theme, setTheme }) => {
   let navigate = useNavigate();
   let location = useLocation();
 
@@ -97,6 +97,15 @@ const Navbar = ({ search, setSearch, searchType, setSearchType }) => {
       <li className="nav-item">
         <Link className={`nav-link ${location.pathname === "/about" ? "active" : ""}`} to="/about">About</Link>
       </li>
+
+      <div className="form-check form-switch text-light me-3">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            checked={theme === "dark"}
+            onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
+          />
+        </div>
 
       {token && (
         <li className="nav-item mt-2">

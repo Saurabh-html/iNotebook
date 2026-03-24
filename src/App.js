@@ -7,7 +7,7 @@ import NoteState from './context/notes/NoteState';
 import Alert from './components/Alert';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ForgotPassword from './components/ForgotPassword';
 import UpdatePassword from './components/UpdatePassword';
 import config from "./config";
@@ -16,6 +16,7 @@ function App() {
   const [alert, setAlert] = useState(null);
   const [search, setSearch] = useState("");
 const [searchType, setSearchType] = useState("title");
+const [theme, setTheme] = useState("light");
 
   const showAlert = (message, type) => {
     setAlert({ msg: message, type: type });
@@ -24,6 +25,10 @@ const [searchType, setSearchType] = useState("title");
       setAlert(null);
     }, 1500);
   }
+
+  useEffect(() => {
+  document.body.className = theme === "dark" ? "bg-dark text-light" : "bg-light text-dark";
+}, [theme]);
 
   const isLoggedIn = localStorage.getItem(config.TOKEN_KEY);
 
@@ -35,6 +40,8 @@ const [searchType, setSearchType] = useState("title");
           setSearch={setSearch}
           searchType={searchType}
           setSearchType={setSearchType}
+          theme={theme}
+          setTheme={setTheme}
         />
         <Alert alert={alert} />
 

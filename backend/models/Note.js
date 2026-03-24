@@ -21,7 +21,7 @@ const NotesSchema = new Schema({
   date:{
     type: Date,
     default: Date.now()
-  }
-});
+  },
+}, {timestamps:true});
 
 module.exports = mongoose.model('notes', NotesSchema);

@@ -16,7 +16,13 @@ const NoteState = (props) => {
       },
     });
     const json = await response.json();
+
+    if (Array.isArray(json)) {
     setNotes(json);
+    } else {
+    console.error("Invalid response:", json);
+    setNotes([]); // fallback safe
+}
   };
 
   // Add a Note
