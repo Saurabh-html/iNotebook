@@ -9,6 +9,7 @@ const Notes = (props) => {
   const context = useContext(noteContext);
   let navigate = useNavigate();
 
+
   const { notes = [], getNotes, editNote } = context; // ✅ safe default
 
   useEffect(() => {
@@ -28,6 +29,8 @@ const Notes = (props) => {
     edescription: "",
     etag: ""
   });
+
+    const[selectedNote, setSelectedNote]= useState(null);
 
   const ref = useRef(null);
   const refClose = useRef(null);
@@ -158,9 +161,32 @@ const Notes = (props) => {
             updateNote={updateNote}
             showAlert={props.showAlert}
             note={n}
+            openNote={setSelectedNote}
           />
         ))}
       </div>
+      {selectedNote && (
+  <div className="modal show d-block" tabIndex="-1">
+    <div className="modal-dialog">
+      <div className="modal-content">
+
+        <div className="modal-header">
+          <h5 className="modal-title">{selectedNote.title}</h5>
+          <i
+            className="fa-solid fa-xmark"
+            style={{ cursor: "pointer", fontSize: "20px" }}
+            onClick={() => setSelectedNote(null)}
+          ></i>
+        </div>
+
+        <div className="modal-body">
+          <p>{selectedNote.description}</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+)}
     </>
   );
 };

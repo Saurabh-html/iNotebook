@@ -60,12 +60,11 @@ const AddNote = (props) => {
         {/* DESCRIPTION */}
         <div className="mb-3">
           <label htmlFor="description" className="form-label">Description</label>
-          <input
-            type="text"
+          <textarea
             className="form-control"
             id="description"
             name="description"
-            value={note.description}
+            rows="3"
             onChange={onChange}
           />
           {note.description && note.description.length < 5 && (
