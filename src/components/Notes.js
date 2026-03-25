@@ -9,7 +9,7 @@ const Notes = (props) => {
   const context = useContext(noteContext);
   let navigate = useNavigate();
 
-  const { notes = [], getNotes, editNote } = context;
+  const { notes = [], getNotes, editNote, serverDown } = context;
 
   useEffect(() => {
     const token = localStorage.getItem(config.TOKEN_KEY);
@@ -89,6 +89,11 @@ const Notes = (props) => {
   return (
     <>
       <AddNote showAlert={props.showAlert} />
+      {serverDown && (
+        <div className="alert alert-danger">
+          Server is down. Please try again later.
+        </div>
+      )}
 
       {/* Hidden button for edit modal */}
       <button
