@@ -5,9 +5,11 @@ import config from "../../config";
 const NoteState = (props) => {
   const host = config.API_URL;
   const [notes, setNotes] = useState([]);
+  const [serverDown, setServerDown] = useState(false);
 
   // Get all Notes
-  const getNotes = async () => {
+const getNotes = async () => {
+  try {
     const response = await fetch(`${host}/api/notes/fetchallnotes`, {
       method: 'GET',
       headers: {
@@ -15,15 +17,30 @@ const NoteState = (props) => {
         'auth-token': localStorage.getItem(config.TOKEN_KEY)
       },
     });
+
+    // ✅ Handle server error (500, 502 etc.)
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+
     const json = await response.json();
 
+    // ✅ Keep your existing safety check
     if (Array.isArray(json)) {
-    setNotes(json);
+      setNotes(json);
+      setServerDown(false); // ✅ important reset
     } else {
-    console.error("Invalid response:", json);
-    setNotes([]); // fallback safe
-}
-  };
+      console.error("Invalid response:", json);
+      setNotes([]);
+      setServerDown(true);
+    }
+
+  } catch (error) {
+    console.error("Fetch failed:", error);
+    setNotes([]); // fallback
+    setServerDown(true); // ✅ trigger UI alert
+  }
+};
 
   // Add a Note
   const addNote = async (title, description, tag) => {
@@ -80,7 +97,7 @@ const NoteState = (props) => {
   };
 
   return (
-    <NoteContext.Provider value={{ notes, addNote, deleteNote, editNote, getNotes }}>
+    <NoteContext.Provider value={{ notes, addNote, deleteNote, editNote, getNotes, serverDown }}>
       {props.children}
     </NoteContext.Provider>
   );

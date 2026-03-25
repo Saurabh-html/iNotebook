@@ -65,6 +65,7 @@ const AddNote = (props) => {
             id="description"
             name="description"
             rows="3"
+            value={note.description}
             onChange={onChange}
           />
           {note.description && note.description.length < 5 && (
@@ -93,7 +94,7 @@ const AddNote = (props) => {
           type="submit"
           className="btn btn-primary"
           onClick={handleClick}
-          disabled={!isFormValid} // ✅ key change
+          disabled={!isFormValid}
         >
           Add Note
         </button>
