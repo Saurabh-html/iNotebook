@@ -54,7 +54,7 @@ const Notes = (props) => {
     setNote({ ...note, [e.target.name]: e.target.value });
   };
 
-  // 🔥 Prevent background scroll when modal open
+  //  Prevent background scroll when modal open
   useEffect(() => {
     if (selectedNote) {
       document.body.style.overflow = "hidden";
@@ -63,7 +63,7 @@ const Notes = (props) => {
     }
   }, [selectedNote]);
 
-  // ✅ FILTER
+  // FILTER
   const filteredNotes = (notes || []).filter((n) => {
     if (!props.search) return true;
 
@@ -127,7 +127,7 @@ const Notes = (props) => {
                   placeholder="Title"
                 />
 
-                <input
+                <textarea
                   type="text"
                   className="form-control mb-2"
                   name="edescription"
@@ -180,7 +180,7 @@ const Notes = (props) => {
         ))}
       </div>
 
-      {/* 🔥 BLUR BACKGROUND */}
+      {/*  BLUR BACKGROUND */}
       {selectedNote && (
         <div
           className="blur-overlay"
@@ -188,7 +188,7 @@ const Notes = (props) => {
         ></div>
       )}
 
-      {/* 🔥 VIEW NOTE MODAL */}
+      {/*  VIEW NOTE MODAL */}
       {selectedNote && (
         <div
           className="d-flex justify-content-center align-items-center"
@@ -205,11 +205,14 @@ const Notes = (props) => {
             className={`card p-3 ${props.mode === "dark" ? "bg-dark text-light border-secondary" : ""}`}
             style={{
               width: "90%",
-              maxWidth: "500px"
+              maxWidth: "500px",
+              maxHeight: "80vh",
+              overflow: "hidden",
+              borderRadius: "12px"
             }}
           >
 
-            {/* 🔥 HEADER FIXED */}
+            {/* HEADER FIXED */}
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h5 className="mb-0">{selectedNote.title}</h5>
 
@@ -222,9 +225,16 @@ const Notes = (props) => {
 
             <hr />
 
-            <p style={{ whiteSpace: "pre-wrap" }}>
+            <div
+              style={{
+                maxHeight: "60vh",
+                overflowY: "auto",
+                whiteSpace: "pre-wrap",
+                paddingRight: "5px"
+              }}
+            >
               {selectedNote.description}
-            </p>
+            </div>
 
           </div>
         </div>
