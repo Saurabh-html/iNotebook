@@ -56,15 +56,7 @@ const NoteItem = (props) => {
             <h5 className="card-title mb-0">{truncate(note?.title, 17)}</h5>
 
             <div>
-              {/* PIN */}
-              <i
-                className={`fa-solid fa-thumbtack mx-2 ${note.isPinned ? "text-warning" : ""}`}
-                style={{ cursor: "pointer" }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  props.togglePin(note);
-                }}
-              ></i>
+    
 
               {/* EDIT */}
               <i

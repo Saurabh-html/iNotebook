@@ -109,26 +109,4 @@ router.delete('/deletenote/:id', fetchuser, async (req, res) => {
   }
 });
 
-// ROUTE 5: Toggle Pin
-router.put('/pin/:id', fetchuser, async (req, res) => {
-  try {
-    let note = await Note.findById(req.params.id);
-
-    if (!note) return res.status(404).send("Not Found");
-
-    if (note.user.toString() !== req.user.id) {
-      return res.status(401).send("Not Allowed");
-    }
-
-    note.isPinned = !note.isPinned;
-    await note.save();
-
-    res.json(note);
-
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
 module.exports = router;

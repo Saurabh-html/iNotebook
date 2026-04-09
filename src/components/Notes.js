@@ -9,7 +9,7 @@ const Notes = (props) => {
   const context = useContext(noteContext);
   let navigate = useNavigate();
 
-  const { notes = [], getNotes, editNote, serverDown, setNotes } = context;
+  const { notes = [], getNotes, editNote, serverDown, } = context;
 
   useEffect(() => {
     const token = localStorage.getItem(config.TOKEN_KEY);
@@ -65,34 +65,6 @@ const Notes = (props) => {
     setNote({ ...note, [e.target.name]: e.target.value });
   };
 
-const togglePin = async (note) => {
-  try {
-    const response = await fetch(`${config.API_URL}/api/notes/pin/${note._id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'auth-token': localStorage.getItem(config.TOKEN_KEY)
-      }
-    });
-
-    const updatedNote = await response.json();
-
-    const updatedNotes = notes.map(n =>
-      n._id === note._id ? updatedNote : n
-    );
-
-    setNotes(updatedNotes);
-
-    props.showAlert(
-      updatedNote.isPinned ? "Note pinned" : "Note unpinned",
-      "success"
-    );
-
-  } catch (error) {
-    props.showAlert("Pin failed", "danger");
-  }
-};
-
   // Prevent background scroll when modal open
   useEffect(() => {
     if (selectedNote) {
@@ -126,14 +98,10 @@ const togglePin = async (note) => {
       return true;
     })
 .sort((a, b) => {
-  if (a.isPinned === b.isPinned) {
-    const dateA = new Date(a.lastEditedAt || a.createdAt);
-    const dateB = new Date(b.lastEditedAt || b.createdAt);
-    return dateB - dateA;
-  }
-  return b.isPinned - a.isPinned;
+  const dateA = new Date(a.lastEditedAt || a.updatedAt || a.createdAt).getTime();
+  const dateB = new Date(b.lastEditedAt || b.updatedAt || b.createdAt).getTime();
+  return dateB - dateA;
 });
-
   return (
     <>
       <AddNote showAlert={props.showAlert} />
@@ -224,7 +192,6 @@ const togglePin = async (note) => {
             showAlert={props.showAlert}
             note={n}
             openNote={setSelectedNote}
-            togglePin={togglePin} // ✅ NEW
           />
         ))}
       </div>
