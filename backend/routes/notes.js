@@ -49,15 +49,20 @@ router.post(
   }
 );
 
-// ROUTE 3: Update note (FIXED RESPONSE)
+// ROUTE 3: Update note (FINAL FIX)
 router.put('/updatenote/:id', fetchuser, async (req, res) => {
   const { title, description, tag } = req.body;
 
   try {
     const newNote = {};
+
     if (title) newNote.title = title;
     if (description) newNote.description = description;
     if (tag) newNote.tag = tag;
+
+    if (title || description || tag) {
+      newNote.lastEditedAt = new Date();
+    }
 
     let note = await Note.findById(req.params.id);
     if (!note) return res.status(404).send("Not Found");
@@ -72,7 +77,7 @@ router.put('/updatenote/:id', fetchuser, async (req, res) => {
       { new: true }
     );
 
-    res.json(note); // ✅ FIXED
+    res.json(note);
 
   } catch (error) {
     console.error(error.message);
@@ -104,7 +109,7 @@ router.delete('/deletenote/:id', fetchuser, async (req, res) => {
   }
 });
 
-// ✅ ROUTE 5: Toggle Pin
+// ROUTE 5: Toggle Pin
 router.put('/pin/:id', fetchuser, async (req, res) => {
   try {
     let note = await Note.findById(req.params.id);

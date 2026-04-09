@@ -125,11 +125,11 @@ const togglePin = async (note) => {
 
       return true;
     })
-    .sort((a, b) => {
+.sort((a, b) => {
   if (a.isPinned === b.isPinned) {
-    const dateA = new Date(a.updatedAt || a.createdAt);
-    const dateB = new Date(b.updatedAt || b.createdAt);
-    return dateB - dateA; // latest activity first
+    const dateA = new Date(a.lastEditedAt || a.createdAt);
+    const dateB = new Date(b.lastEditedAt || b.createdAt);
+    return dateB - dateA;
   }
   return b.isPinned - a.isPinned;
 });

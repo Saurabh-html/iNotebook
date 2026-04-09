@@ -18,7 +18,11 @@ const NotesSchema = new Schema({
     type: [String],
     default: ["General"]
   },
-  isPinned: {            // ✅ NEW FIELD
+  lastEditedAt: {
+  type: Date,
+  default: null
+},
+  isPinned: {            // NEW FIELD
     type: Boolean,
     default: false
   },

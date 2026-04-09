@@ -27,12 +27,8 @@ const NoteItem = (props) => {
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // ✅ IMPORTANT FIX → ignore pin updates
-  const isEdited =
-    note.updatedAt &&
-    note.createdAt &&
-    note.updatedAt !== note.createdAt &&
-    !note.isPinned; // 🔥 KEY FIX
+  // ✅ FINAL FIX → USE lastEditedAt (NOT updatedAt)
+  const isEdited = !!note.lastEditedAt;
 
   return (
     <div className="col-md-3" onClick={() => props.openNote(note)} style={{ cursor: "pointer" }}>
@@ -44,13 +40,13 @@ const NoteItem = (props) => {
           <div className="d-flex justify-content-between text-muted" style={{ fontSize: "12px" }}>
             <span>
               {isEdited
-                ? formatDate(note.updatedAt)
+                ? formatDate(note.lastEditedAt)
                 : formatDate(note.createdAt)}
             </span>
 
             <span>
               {isEdited
-                ? `Edited at: ${formatTime(note.updatedAt)}`
+                ? `Edited at: ${formatTime(note.lastEditedAt)}`
                 : formatTime(note.createdAt)}
             </span>
           </div>
