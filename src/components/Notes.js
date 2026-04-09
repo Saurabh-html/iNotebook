@@ -54,7 +54,7 @@ const Notes = (props) => {
     setNote({ ...note, [e.target.name]: e.target.value });
   };
 
-  //  Prevent background scroll when modal open
+  // Prevent background scroll when modal open
   useEffect(() => {
     if (selectedNote) {
       document.body.style.overflow = "hidden";
@@ -63,32 +63,35 @@ const Notes = (props) => {
     }
   }, [selectedNote]);
 
-  // FILTER
-  const filteredNotes = (notes || []).filter((n) => {
-    if (!props.search) return true;
+  // FILTER + SORT (LATEST FIRST)
+  const filteredNotes = (notes || [])
+    .filter((n) => {
+      if (!props.search) return true;
 
-    if (props.searchType === "title") {
-      return n.title?.toLowerCase().includes(props.search.toLowerCase());
-    }
+      if (props.searchType === "title") {
+        return n.title?.toLowerCase().includes(props.search.toLowerCase());
+      }
 
-    if (props.searchType === "tag") {
-      const tags = Array.isArray(n.tag)
-        ? n.tag
-        : typeof n.tag === "string"
-          ? n.tag.split(',').map(t => t.trim())
-          : [];
+      if (props.searchType === "tag") {
+        const tags = Array.isArray(n.tag)
+          ? n.tag
+          : typeof n.tag === "string"
+            ? n.tag.split(',').map(t => t.trim())
+            : [];
 
-      return tags.some(tag =>
-        tag.toLowerCase().includes(props.search.toLowerCase())
-      );
-    }
+        return tags.some(tag =>
+          tag.toLowerCase().includes(props.search.toLowerCase())
+        );
+      }
 
-    return true;
-  });
+      return true;
+    })
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // ✅ FIXED ORDER
 
   return (
     <>
       <AddNote showAlert={props.showAlert} />
+
       {serverDown && (
         <div className="alert alert-danger">
           Server is down. Please try again later.
@@ -162,7 +165,8 @@ const Notes = (props) => {
 
       {/* NOTES LIST */}
       <div className="row my-3">
-        <h2>Your Notes</h2>
+        {/* ✅ COUNTER ADDED */}
+        <h2>Your Notes ({filteredNotes.length})</h2>
 
         {Array.isArray(notes) && notes.length === 0 && (
           <p>No notes to display</p>
@@ -180,7 +184,7 @@ const Notes = (props) => {
         ))}
       </div>
 
-      {/*  BLUR BACKGROUND */}
+      {/* BLUR BACKGROUND */}
       {selectedNote && (
         <div
           className="blur-overlay"
@@ -188,7 +192,7 @@ const Notes = (props) => {
         ></div>
       )}
 
-      {/*  VIEW NOTE MODAL */}
+      {/* VIEW NOTE MODAL */}
       {selectedNote && (
         <div
           className="d-flex justify-content-center align-items-center"
@@ -212,7 +216,6 @@ const Notes = (props) => {
             }}
           >
 
-            {/* HEADER FIXED */}
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h5 className="mb-0">{selectedNote.title}</h5>
 

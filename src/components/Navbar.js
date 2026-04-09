@@ -15,6 +15,14 @@ const Navbar = ({ search, setSearch, searchType, setSearchType, theme, setTheme 
     navigate("/login");
   };
 
+  const handleProtectedRoute = (path) => {
+    if (!token) {
+      navigate("/login");
+    } else {
+      navigate(path);
+    }
+  };
+
   const getUserDetails = async () => {
     try {
       const response = await fetch(`${config.API_URL}/api/auth/getuser`, {
@@ -42,90 +50,68 @@ const Navbar = ({ search, setSearch, searchType, setSearchType, theme, setTheme 
     <>
       <nav className="navbar navbar-dark bg-dark px-3">
 
-  {/* ROW 1 → BRAND + HAMBURGER */}
-  <div className="d-flex justify-content-between align-items-center w-100">
+        {/* TOP ROW */}
+        <div className="d-flex justify-content-between align-items-center w-100 flex-wrap">
 
-    <Link className="navbar-brand mb-0" to="/">iNotebook</Link>
+          <Link className="navbar-brand mb-0" to="/">iNotebook</Link>
 
-    <button
-      className="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarContent"
-    >
-      <span className="navbar-toggler-icon"></span>
-    </button>
+          <div className="d-flex align-items-center gap-3">
 
-  </div>
+            <span className="text-light" style={{ cursor: "pointer" }} onClick={() => handleProtectedRoute("/")}>Home</span>
 
-  {/* ROW 2 → SEARCH BAR */}
-  {token && location.pathname !== "/about" && (
-    <div className="w-100 mt-2">
-      <div className="input-group">
+            <span className="text-light" style={{ cursor: "pointer" }} onClick={() => handleProtectedRoute("/about")}>About</span>
 
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+            {/* THEME TOGGLE */}
+            <div className="form-check form-switch text-light m-0">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
+              />
+            </div>
 
-        <select
-          className="form-select"
-          style={{ maxWidth: "100px" }}
-          value={searchType}
-          onChange={(e) => setSearchType(e.target.value)}
-        >
-          <option value="title">Title</option>
-          <option value="tag">Tag</option>
-        </select>
+            {/* PROFILE */}
+            {token && (
+              <i
+                className="fa-solid fa-user"
+                style={{ cursor: "pointer", fontSize: "20px", color: "white" }}
+                data-bs-toggle="offcanvas"
+                data-bs-target="#profileSidebar"
+              ></i>
+            )}
 
-      </div>
-    </div>
-  )}
-
-  {/* COLLAPSE MENU */}
-  <div className="collapse navbar-collapse mt-2" id="navbarContent">
-
-    <ul className="navbar-nav ms-auto">
-
-      <li className="nav-item">
-        <Link className={`nav-link ${location.pathname === "/" ? "active" : ""}`} to="/">Home</Link>
-      </li>
-
-      <li className="nav-item">
-        <Link className={`nav-link ${location.pathname === "/about" ? "active" : ""}`} to="/about">About</Link>
-      </li>
-
-      <div className="form-check form-switch text-light me-3">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            checked={theme === "dark"}
-            onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
-          />
+          </div>
         </div>
 
-      {token && (
-        <li className="nav-item mt-2">
+        {/* SEARCH BAR */}
+        {token && location.pathname !== "/about" && (
+          <div className="w-100 mt-2">
+            <div className="input-group">
 
-          <button
-            className="btn btn-outline-light"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#profileSidebar"
-          >
-            Profile
-          </button>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
 
-        </li>
-      )}
+              <select
+                className="form-select"
+                style={{ maxWidth: "100px" }}
+                value={searchType}
+                onChange={(e) => setSearchType(e.target.value)}
+              >
+                <option value="title">Title</option>
+                <option value="tag">Tag</option>
+              </select>
 
-    </ul>
+            </div>
+          </div>
+        )}
 
-  </div>
-
-</nav>
+      </nav>
 
       {/* SIDEBAR */}
       <div className="offcanvas offcanvas-end d-flex flex-column" id="profileSidebar">
