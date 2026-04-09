@@ -27,8 +27,12 @@ const NoteItem = (props) => {
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // ✅ CHECK IF EDITED
-  const isEdited = note.updatedAt && note.createdAt && note.updatedAt !== note.createdAt;
+  // ✅ IMPORTANT FIX → ignore pin updates
+  const isEdited =
+    note.updatedAt &&
+    note.createdAt &&
+    note.updatedAt !== note.createdAt &&
+    !note.isPinned; // 🔥 KEY FIX
 
   return (
     <div className="col-md-3" onClick={() => props.openNote(note)} style={{ cursor: "pointer" }}>
@@ -80,10 +84,11 @@ const NoteItem = (props) => {
               <i
                 className="fa-solid fa-trash mx-2"
                 style={{ cursor: "pointer" }}
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.stopPropagation();
-                  deleteNote(note._id);
-                  props.showAlert("Deleted successfully", "success");
+                  const success = await deleteNote(note._id);
+                  if (success) props.showAlert("Deleted successfully", "success");
+                  else props.showAlert("Delete failed", "danger");
                 }}
               ></i>
 
@@ -119,7 +124,6 @@ const NoteItem = (props) => {
 
           <p className="card-text mt-2">{truncate(note?.description, 55)}</p>
 
-          {/* TAGS */}
           <div className="mt-2">
             {tags.length > 0 ? (
               tags.map((t, index) => (

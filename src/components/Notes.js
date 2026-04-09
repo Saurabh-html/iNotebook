@@ -44,11 +44,22 @@ const Notes = (props) => {
     });
   };
 
-  const handleClick = () => {
-    editNote(note.id, note.etitle, note.edescription, note.etag);
-    refClose.current.click();
-    props.showAlert("Note updated successfully", "success"); // ✅ FIXED ALERT
-  };
+  const handleClick = async () => {
+  const success = await editNote(
+    note.id,
+    note.etitle,
+    note.edescription,
+    note.etag
+  );
+
+  if (success) {
+    props.showAlert("Note updated successfully", "success");
+  } else {
+    props.showAlert("Update failed", "danger");
+  }
+
+  refClose.current.click();
+};
 
   const onChange = (e) => {
     setNote({ ...note, [e.target.name]: e.target.value });
@@ -115,11 +126,13 @@ const togglePin = async (note) => {
       return true;
     })
     .sort((a, b) => {
-      if (a.isPinned === b.isPinned) {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      }
-      return b.isPinned - a.isPinned;
-    });
+  if (a.isPinned === b.isPinned) {
+    const dateA = new Date(a.updatedAt || a.createdAt);
+    const dateB = new Date(b.updatedAt || b.createdAt);
+    return dateB - dateA; // latest activity first
+  }
+  return b.isPinned - a.isPinned;
+});
 
   return (
     <>
