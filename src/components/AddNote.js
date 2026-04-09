@@ -11,7 +11,7 @@ const AddNote = (props) => {
     tag: ""
   });
 
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     e.preventDefault();
 
     const tagArray = note.tag
@@ -19,17 +19,20 @@ const AddNote = (props) => {
       .map(tag => tag.trim())
       .filter(tag => tag !== "");
 
-    addNote(note.title, note.description, tagArray);
+    const success = await addNote(note.title, note.description, tagArray);
 
-    setNote({ title: "", description: "", tag: "" });
-    props.showAlert("Added successfully", "success");
+    if (success) {
+      setNote({ title: "", description: "", tag: "" });
+      props.showAlert("Added successfully", "success");
+    } else {
+      props.showAlert("Failed to add note", "danger");
+    }
   };
 
   const onChange = (e) => {
     setNote({ ...note, [e.target.name]: e.target.value });
   };
 
-  // ✅ VALIDATION (matches backend)
   const isFormValid =
     note.title.trim().length >= 3 &&
     note.description.trim().length >= 5;
@@ -39,7 +42,6 @@ const AddNote = (props) => {
       <h2>Add a Note</h2>
 
       <form>
-        {/* TITLE */}
         <div className="mb-3">
           <label htmlFor="title" className="form-label">Title</label>
           <input
@@ -57,7 +59,6 @@ const AddNote = (props) => {
           )}
         </div>
 
-        {/* DESCRIPTION */}
         <div className="mb-3">
           <label htmlFor="description" className="form-label">Description</label>
           <textarea
@@ -75,7 +76,6 @@ const AddNote = (props) => {
           )}
         </div>
 
-        {/* TAG */}
         <div className="mb-3">
           <label htmlFor="tag" className="form-label">Tag</label>
           <input
@@ -89,7 +89,6 @@ const AddNote = (props) => {
           />
         </div>
 
-        {/* BUTTON */}
         <button
           type="submit"
           className="btn btn-primary"

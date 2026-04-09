@@ -9,7 +9,7 @@ const Notes = (props) => {
   const context = useContext(noteContext);
   let navigate = useNavigate();
 
-  const { notes = [], getNotes, editNote, serverDown } = context;
+  const { notes = [], getNotes, editNote, serverDown, setNotes } = context;
 
   useEffect(() => {
     const token = localStorage.getItem(config.TOKEN_KEY);
@@ -47,12 +47,40 @@ const Notes = (props) => {
   const handleClick = () => {
     editNote(note.id, note.etitle, note.edescription, note.etag);
     refClose.current.click();
-    props.showAlert("Updated successfully", "success");
+    props.showAlert("Note updated successfully", "success"); // ✅ FIXED ALERT
   };
 
   const onChange = (e) => {
     setNote({ ...note, [e.target.name]: e.target.value });
   };
+
+const togglePin = async (note) => {
+  try {
+    const response = await fetch(`${config.API_URL}/api/notes/pin/${note._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem(config.TOKEN_KEY)
+      }
+    });
+
+    const updatedNote = await response.json();
+
+    const updatedNotes = notes.map(n =>
+      n._id === note._id ? updatedNote : n
+    );
+
+    setNotes(updatedNotes);
+
+    props.showAlert(
+      updatedNote.isPinned ? "Note pinned" : "Note unpinned",
+      "success"
+    );
+
+  } catch (error) {
+    props.showAlert("Pin failed", "danger");
+  }
+};
 
   // Prevent background scroll when modal open
   useEffect(() => {
@@ -63,7 +91,7 @@ const Notes = (props) => {
     }
   }, [selectedNote]);
 
-  // FILTER + SORT (LATEST FIRST)
+  //  FILTER + SORT (PINNED FIRST → LATEST FIRST)
   const filteredNotes = (notes || [])
     .filter((n) => {
       if (!props.search) return true;
@@ -86,7 +114,12 @@ const Notes = (props) => {
 
       return true;
     })
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // ✅ FIXED ORDER
+    .sort((a, b) => {
+      if (a.isPinned === b.isPinned) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      return b.isPinned - a.isPinned;
+    });
 
   return (
     <>
@@ -131,7 +164,6 @@ const Notes = (props) => {
                 />
 
                 <textarea
-                  type="text"
                   className="form-control mb-2"
                   name="edescription"
                   value={note.edescription}
@@ -165,7 +197,6 @@ const Notes = (props) => {
 
       {/* NOTES LIST */}
       <div className="row my-3">
-        {/* ✅ COUNTER ADDED */}
         <h2>Your Notes ({filteredNotes.length})</h2>
 
         {Array.isArray(notes) && notes.length === 0 && (
@@ -180,6 +211,7 @@ const Notes = (props) => {
             showAlert={props.showAlert}
             note={n}
             openNote={setSelectedNote}
+            togglePin={togglePin} // ✅ NEW
           />
         ))}
       </div>

@@ -7,7 +7,6 @@ const NoteItem = (props) => {
 
   const { note, updateNote } = props;
 
-  // Tags safe handling
   const tags = Array.isArray(note?.tag)
     ? note.tag
     : typeof note?.tag === "string"
@@ -28,22 +27,27 @@ const NoteItem = (props) => {
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  // ✅ CHECK IF EDITED
+  const isEdited = note.updatedAt && note.createdAt && note.updatedAt !== note.createdAt;
+
   return (
     <div className="col-md-3" onClick={() => props.openNote(note)} style={{ cursor: "pointer" }}>
 
       <div className={`card my-3 ${props.mode === "dark" ? "bg-dark text-light border-secondary" : ""}`}>
         <div className="card-body">
 
-          {/* DATE + EDITED TIME */}
+          {/* DATE + TIME */}
           <div className="d-flex justify-content-between text-muted" style={{ fontSize: "12px" }}>
-            <span>{note.createdAt ? formatDate(note.createdAt) : ""}</span>
+            <span>
+              {isEdited
+                ? formatDate(note.updatedAt)
+                : formatDate(note.createdAt)}
+            </span>
 
             <span>
-              {note.updatedAt
+              {isEdited
                 ? `Edited at: ${formatTime(note.updatedAt)}`
-                : note.createdAt
-                  ? formatTime(note.createdAt)
-                  : ""}
+                : formatTime(note.createdAt)}
             </span>
           </div>
 
@@ -52,6 +56,16 @@ const NoteItem = (props) => {
             <h5 className="card-title mb-0">{truncate(note?.title, 17)}</h5>
 
             <div>
+              {/* PIN */}
+              <i
+                className={`fa-solid fa-thumbtack mx-2 ${note.isPinned ? "text-warning" : ""}`}
+                style={{ cursor: "pointer" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.togglePin(note);
+                }}
+              ></i>
+
               {/* EDIT */}
               <i
                 className="fa-solid fa-pen-to-square mx-2"
