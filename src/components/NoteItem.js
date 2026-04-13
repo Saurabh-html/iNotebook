@@ -46,9 +46,10 @@ const NoteItem = (props) => {
         <mark key={index}>{part}</mark>
       ) : (
         part
-      ),
+      )
     );
   };
+
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id: note._id,
@@ -75,33 +76,24 @@ const NoteItem = (props) => {
         }}
       >
         <div className="card-body">
-          {/* DATE + TIME */}
+
+          {/* DATE + DRAG + TIME */}
           <div
-  className="d-flex justify-content-between align-items-center text-muted"
-  style={{ fontSize: "12px" }}
->
-  {/* DATE */}
-  <span>
-    {isEdited
-      ? formatDate(note.lastEditedAt)
-      : formatDate(note.createdAt)}
-  </span>
+            className="d-flex justify-content-between align-items-center text-muted"
+            style={{ fontSize: "12px" }}
+          >
+            <span>
+              {isEdited
+                ? formatDate(note.lastEditedAt)
+                : formatDate(note.createdAt)}
+            </span>
 
-  {/* DRAG ICON CENTER */}
-  <i
-    className="fa-solid fa-grip-vertical"
-    {...listeners}
-    style={{ cursor: "grab", fontSize: "14px" }}
-    onClick={(e) => e.stopPropagation()}
-  />
-
-  {/* TIME */}
-  <span>
-    {isEdited
-      ? `Edited at: ${formatTime(note.lastEditedAt)}`
-      : formatTime(note.createdAt)}
-  </span>
-</div>
+            <i
+              className="fa-solid fa-grip-vertical"
+              {...listeners}
+              style={{ cursor: "grab", fontSize: "14px" }}
+              onClick={(e) => e.stopPropagation()}
+            />
 
             <span>
               {isEdited
@@ -111,73 +103,79 @@ const NoteItem = (props) => {
           </div>
 
           {/* TITLE + ACTIONS */}
-          <div className="d-flex justify-content-between align-items-center mt-1">
+          <div className="d-flex justify-content-between align-items-start mt-2">
             <h5 className="card-title mb-0">
               {props.searchType === "title"
                 ? highlightText(truncate(note?.title, 17), props.search)
                 : truncate(note?.title, 17)}
             </h5>
-              <div className="d-flex flex-column align-items-end">
 
-  {/* ROW 1 */}
-  <div className="d-flex">
-    <div className="icon-wrapper">
-      <i className="fa-solid fa-pen-to-square mx-2"
-        onClick={(e) => { e.stopPropagation(); updateNote(note); }} />
-      <span>Edit</span>
-    </div>
+            <div className="d-flex flex-column align-items-end">
 
-    <div className="icon-wrapper">
-      <i className="fa-solid fa-clock-rotate-left mx-2"
-        onClick={(e) => { e.stopPropagation(); props.openHistory(note); }} />
-      <span>History</span>
-    </div>
+              {/* ROW 1 */}
+              <div className="d-flex mb-2">
+                <div className="icon-wrapper">
+                  <i className="fa-solid fa-pen-to-square mx-2"
+                    onClick={(e) => { e.stopPropagation(); updateNote(note); }} />
+                  <span>Edit</span>
+                </div>
 
-    <div className="icon-wrapper">
-      <i className="fa-solid fa-trash mx-2"
-        onClick={async (e) => {
-          e.stopPropagation();
-          const success = await deleteNote(note._id);
-          if (success) props.showAlert("Deleted successfully", "success");
-        }} />
-      <span>Delete</span>
-    </div>
-  </div>
+                <div className="icon-wrapper">
+                  <i className="fa-solid fa-clock-rotate-left mx-2"
+                    onClick={(e) => { e.stopPropagation(); props.openHistory(note); }} />
+                  <span>History</span>
+                </div>
 
-  {/* ROW 2 */}
-  <div className="d-flex mt-1">
-    <div className="icon-wrapper">
-      <i className="fa-solid fa-copy mx-2"
-        onClick={(e) => {
-          e.stopPropagation();
-          navigator.clipboard.writeText(note.description);
-          props.showAlert("Copied", "success");
-        }} />
-      <span>Copy</span>
-    </div>
+                <div className="icon-wrapper">
+                  <i className="fa-solid fa-trash mx-2"
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      const success = await deleteNote(note._id);
+                      if (success) props.showAlert("Deleted successfully", "success");
+                      else props.showAlert("Delete failed", "danger");
+                    }} />
+                  <span>Delete</span>
+                </div>
+              </div>
 
-    <div className="icon-wrapper">
-      <i className="fa-solid fa-share-nodes mx-2"
-        onClick={(e) => {
-          e.stopPropagation();
-          if (navigator.share) {
-            navigator.share({ title: note.title, text: note.description });
-          }
-        }} />
-      <span>Share</span>
-    </div>
+              {/* ROW 2 */}
+              <div className="d-flex">
+                <div className="icon-wrapper">
+                  <i className="fa-solid fa-copy mx-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(note.description);
+                      props.showAlert("Copied to clipboard", "success");
+                    }} />
+                  <span>Copy</span>
+                </div>
 
-    <div className="icon-wrapper">
-      <i className="fa-solid fa-wand-magic-sparkles mx-2"
-        onClick={(e) => {
-          e.stopPropagation();
-          props.generateSummary(note);
-        }} />
-      <span>Summary</span>
-    </div>
-  </div>
+                <div className="icon-wrapper">
+                  <i className="fa-solid fa-share-nodes mx-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (navigator.share) {
+                        navigator.share({
+                          title: note.title,
+                          text: note.description,
+                        });
+                      } else {
+                        props.showAlert("Sharing not supported", "warning");
+                      }
+                    }} />
+                  <span>Share</span>
+                </div>
 
-</div>
+                <div className="icon-wrapper">
+                  <i className="fa-solid fa-wand-magic-sparkles mx-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      props.generateSummary(note);
+                    }} />
+                  <span>Summary</span>
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -186,6 +184,7 @@ const NoteItem = (props) => {
               ? highlightText(truncate(note?.description, 55), props.search)
               : truncate(note?.description, 55)}
           </p>
+
           <div className="mt-2">
             {tags.length > 0 ? (
               tags.map((t, index) => (
@@ -194,14 +193,15 @@ const NoteItem = (props) => {
                 </span>
               ))
             ) : (
-              <span
-                className={`badge ${props.mode === "dark" ? "bg-light text-dark" : "bg-primary"}`}
-              >
+              <span className={`badge ${props.mode === "dark" ? "bg-light text-dark" : "bg-primary"}`}>
                 General
               </span>
             )}
           </div>
+
         </div>
+      </div>
+    </div>
   );
 };
 
