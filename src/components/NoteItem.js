@@ -57,7 +57,6 @@ const style = {
     ref={setNodeRef}
     style={style}
     {...attributes}
-    {...listeners}
     className="col-md-3"
     onClick={() => props.openNote(note)}
   >
@@ -90,73 +89,103 @@ const style = {
             <div>
     
 
-              {/* EDIT */}
-              <i
-                className="fa-solid fa-pen-to-square mx-2"
-                style={{ cursor: "pointer" }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  updateNote(note);
-                }}
-              ></i>
+                <i
+                  className="fa-solid fa-grip-vertical mx-2"
+                  {...listeners}
+                  style={{ cursor: "grab" }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              <div className="d-flex flex-column align-items-end">
 
-              <i
-                className="fa-solid fa-clock-rotate-left mx-2"
-                style={{ cursor: "pointer" }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  props.openHistory(note);
-                }}
-              ></i>
+  {/* ROW 1 */}
+  <div className="d-flex">
+    {/* EDIT */}
+    <div className="icon-wrapper">
+      <i
+        className="fa-solid fa-pen-to-square mx-2"
+        onClick={(e) => {
+          e.stopPropagation();
+          updateNote(note);
+        }}
+      ></i>
+      <span>Edit</span>
+    </div>
 
-              {/* DELETE */}
-              <i
-                className="fa-solid fa-trash mx-2"
-                style={{ cursor: "pointer" }}
-                onClick={async (e) => {
-                  e.stopPropagation();
-                  const success = await deleteNote(note._id);
-                  if (success) props.showAlert("Deleted successfully", "success");
-                  else props.showAlert("Delete failed", "danger");
-                }}
-              ></i>
+    {/* HISTORY */}
+    <div className="icon-wrapper">
+      <i
+        className="fa-solid fa-clock-rotate-left mx-2"
+        onClick={(e) => {
+          e.stopPropagation();
+          props.openHistory(note);
+        }}
+      ></i>
+      <span>History</span>
+    </div>
 
-              {/* COPY */}
-              <i
-                className="fa-solid fa-copy mx-2"
-                style={{ cursor: "pointer" }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigator.clipboard.writeText(note.description);
-                  props.showAlert("Copied to clipboard", "success");
-                }}
-              ></i>
+    {/* DELETE */}
+    <div className="icon-wrapper">
+      <i
+        className="fa-solid fa-trash mx-2"
+        onClick={async (e) => {
+          e.stopPropagation();
+          const success = await deleteNote(note._id);
+          if (success) props.showAlert("Deleted successfully", "success");
+          else props.showAlert("Delete failed", "danger");
+        }}
+      ></i>
+      <span>Delete</span>
+    </div>
+  </div>
 
-              {/* SHARE */}
-              <i
-                className="fa-solid fa-share-nodes mx-2"
-                style={{ cursor: "pointer" }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (navigator.share) {
-                    navigator.share({
-                      title: note.title,
-                      text: note.description
-                    });
-                  } else {
-                    props.showAlert("Sharing not supported", "warning");
-                  }
-                }}
-              ></i>
-              {/* SUMMARY */}
-              <i
-                className="fa-solid fa-wand-magic-sparkles mx-2"
-                style={{ cursor: "pointer" }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  props.generateSummary(note);
-                }}
-              ></i>
+  {/* ROW 2 */}
+  <div className="d-flex mt-1">
+    {/* COPY */}
+    <div className="icon-wrapper">
+      <i
+        className="fa-solid fa-copy mx-2"
+        onClick={(e) => {
+          e.stopPropagation();
+          navigator.clipboard.writeText(note.description);
+          props.showAlert("Copied to clipboard", "success");
+        }}
+      ></i>
+      <span>Copy</span>
+    </div>
+
+    {/* SHARE */}
+    <div className="icon-wrapper">
+      <i
+        className="fa-solid fa-share-nodes mx-2"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (navigator.share) {
+            navigator.share({
+              title: note.title,
+              text: note.description
+            });
+          } else {
+            props.showAlert("Sharing not supported", "warning");
+          }
+        }}
+      ></i>
+      <span>Share</span>
+    </div>
+
+    {/* SUMMARY */}
+    <div className="icon-wrapper">
+      <i
+        className="fa-solid fa-wand-magic-sparkles mx-2"
+        onClick={(e) => {
+          e.stopPropagation();
+          props.generateSummary(note);
+        }}
+      ></i>
+      <span>Summary</span>
+    </div>
+  </div>
+
+</div>
             </div>
           </div>
 

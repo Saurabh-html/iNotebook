@@ -129,7 +129,7 @@ const filteredNotes = (notes || [])
     version.color
   );
 
-  props.showAlert("Version restored", "success");
+  props.showAlert("Version restored successfully", "success");
 };
 
 const handleDragEnd = (event) => {
@@ -399,7 +399,7 @@ const generateSummary = (note) => {
     }}
   >
     <div className="card p-3" style={{ width: "90%", maxWidth: "500px" }}>
-      <h5>Summary</h5>
+      <h5>AI Summary</h5>
       <hr />
       <p>{summaryText}</p>
 
@@ -409,6 +409,15 @@ const generateSummary = (note) => {
       >
         Close
       </button>
+      <button
+  className="btn btn-success btn-sm me-2"
+  onClick={() => {
+    navigator.clipboard.writeText(summaryText);
+    props.showAlert("Summary copied", "success");
+  }}
+>
+  Copy
+</button>
     </div>
   </div>
 )}
