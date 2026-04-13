@@ -26,7 +26,8 @@ const Notes = (props) => {
     id: "",
     etitle: "",
     edescription: "",
-    etag: ""
+    etag: "",
+    ecolor: "#ffffff"
   });
 
   const [selectedNote, setSelectedNote] = useState(null);
@@ -40,7 +41,8 @@ const Notes = (props) => {
       id: currentNote._id,
       etitle: currentNote.title,
       edescription: currentNote.description,
-      etag: currentNote.tag
+      etag: currentNote.tag,
+      ecolor: currentNote.color || "#ffffff"
     });
   };
 
@@ -49,7 +51,8 @@ const Notes = (props) => {
     note.id,
     note.etitle,
     note.edescription,
-    note.etag
+    note.etag,
+    note.ecolor
   );
 
   if (success) {
@@ -169,6 +172,16 @@ const filteredNotes = (notes || [])
                   onChange={onChange}
                   placeholder="Tag"
                 />
+                <div className="mb-2">
+                <label className="form-label">Note Color</label>
+                <input
+                  type="color"
+                  className="form-control form-control-color"
+                  name="ecolor"
+                  value={note.ecolor || "#ffffff"}
+                  onChange={onChange}
+                />
+              </div>
               </form>
             </div>
 
