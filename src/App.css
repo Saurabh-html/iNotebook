@@ -28,6 +28,7 @@
   color: #61dafb;
 }
 
+/* 🔥 BLUR BACKGROUND */
 .blur-overlay {
   position: fixed;
   top: 0;
@@ -35,10 +36,11 @@
   width: 100%;
   height: 100%;
   backdrop-filter: blur(6px);
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.35);
   z-index: 1040;
 }
 
+/* 🔁 LOGO ANIMATION */
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -48,30 +50,23 @@
   }
 }
 
-.blur-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  backdrop-filter: blur(6px);
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 1040;
-}
-
+/* 🔍 SEARCH HIGHLIGHT */
 mark {
   background-color: yellow;
   padding: 0 2px;
   border-radius: 3px;
 }
 
+/* 🧾 CARD ANIMATION */
 .card {
   transition: all 0.2s ease;
 }
+
 .card:active {
   transform: scale(1.02);
 }
 
+/* 🎯 ICON WRAPPER (CLEANED + FIXED) */
 .icon-wrapper {
   position: relative;
   display: flex;
@@ -80,33 +75,40 @@ mark {
   cursor: pointer;
 }
 
+/* ICON STYLE */
 .icon-wrapper i {
   font-size: 16px;
+  transition: 0.2s;
 }
 
+/* HOVER EFFECT */
+.icon-wrapper i:hover {
+  transform: scale(1.2);
+}
+
+/* 🔥 TOOLTIP (FIXED ABOVE ICON + NO OVERLAP) */
 .icon-wrapper span {
   position: absolute;
-  bottom: -18px;
+  top: -26px; /* moved slightly higher to avoid overlap */
   font-size: 10px;
   background: #000;
   color: #fff;
-  padding: 2px 6px;
+  padding: 3px 6px;
   border-radius: 4px;
   opacity: 0;
   transition: 0.2s;
   white-space: nowrap;
+  pointer-events: none;
+  z-index: 999;
 }
 
+/* SHOW TOOLTIP */
 .icon-wrapper:hover span {
   opacity: 1;
 }
 
+/* 🌙 DARK MODE TOOLTIP */
 body.dark .icon-wrapper span {
   background: #fff;
   color: #000;
-}
-
-.icon-wrapper i:hover {
-  transform: scale(1.2);
-  transition: 0.2s;
 }
