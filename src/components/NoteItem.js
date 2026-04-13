@@ -27,8 +27,20 @@ const NoteItem = (props) => {
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // ✅ FINAL FIX → USE lastEditedAt (NOT updatedAt)
   const isEdited = !!note.lastEditedAt;
+
+  const highlightText = (text, search) => {
+  if (!search) return text;
+
+  const regex = new RegExp(`(${search})`, "gi");
+  const parts = text.split(regex);
+
+  return parts.map((part, index) =>
+    part.toLowerCase() === search.toLowerCase()
+      ? <mark key={index}>{part}</mark>
+      : part
+  );
+};
 
   return (
     <div className="col-md-3" onClick={() => props.openNote(note)} style={{ cursor: "pointer" }}>
@@ -53,7 +65,7 @@ const NoteItem = (props) => {
 
           {/* TITLE + ACTIONS */}
           <div className="d-flex justify-content-between align-items-center mt-1">
-            <h5 className="card-title mb-0">{truncate(note?.title, 17)}</h5>
+            <h5 className="card-title mb-0">{highlightText(truncate(note?.title, 17), props.search)}</h5>
 
             <div>
     
@@ -110,7 +122,7 @@ const NoteItem = (props) => {
             </div>
           </div>
 
-          <p className="card-text mt-2">{truncate(note?.description, 55)}</p>
+          <p className="card-text mt-2">{highlightText(truncate(note?.description, 55), props.search)}</p>
 
           <div className="mt-2">
             {tags.length > 0 ? (

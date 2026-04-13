@@ -191,6 +191,7 @@ const Notes = (props) => {
             updateNote={updateNote}
             showAlert={props.showAlert}
             note={n}
+            search={props.search}
             openNote={setSelectedNote}
           />
         ))}
