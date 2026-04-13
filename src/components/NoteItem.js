@@ -1,5 +1,7 @@
 import React, { useContext } from 'react'
 import noteContext from '../context/notes/noteContext';
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const NoteItem = (props) => {
   const context = useContext(noteContext);
@@ -41,9 +43,24 @@ const NoteItem = (props) => {
       : part
   );
 };
+const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+  id: note._id
+});
+
+const style = {
+  transform: CSS.Transform.toString(transform),
+  transition
+};
 
   return (
-    <div className="col-md-3" onClick={() => props.openNote(note)} style={{ cursor: "pointer" }}>
+  <div
+    ref={setNodeRef}
+    style={style}
+    {...attributes}
+    {...listeners}
+    className="col-md-3"
+    onClick={() => props.openNote(note)}
+  >
 
       <div className={`card my-3 ${props.mode === "dark" ? "bg-dark text-light border-secondary" : ""}`}
   style={{

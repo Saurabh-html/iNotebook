@@ -120,7 +120,7 @@ const AddNote = (props) => {
           className={`btn btn-${isListening ? "danger" : "secondary"} mt-2`}
           onClick={startListening}
         >
-          {isListening ? "Listening..." : "🎤 Speak"}
+          {isListening ? "Listening..." : "Speak (in Hindi or English)"}
         </button>
 
         <div className="mb-3">

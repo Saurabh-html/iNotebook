@@ -4,6 +4,16 @@ import AddNote from "./AddNote";
 import noteContext from "../context/notes/noteContext";
 import { useNavigate } from "react-router-dom";
 import config from "../config";
+import {
+  DndContext,
+  closestCenter
+} from "@dnd-kit/core";
+
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy
+} from "@dnd-kit/sortable";
 
 const Notes = (props) => {
   const context = useContext(noteContext);
@@ -126,6 +136,21 @@ const filteredNotes = (notes || [])
 
   props.showAlert("Version restored", "success");
 };
+
+const handleDragEnd = (event) => {
+  const { active, over } = event;
+
+  if (!over) return;
+
+  if (active.id !== over.id) {
+    const oldIndex = filteredNotes.findIndex(n => n._id === active.id);
+    const newIndex = filteredNotes.findIndex(n => n._id === over.id);
+
+    const newOrder = arrayMove(filteredNotes, oldIndex, newIndex);
+
+    context.setNotes(newOrder);
+  }
+};
   return (
     <>
       <AddNote showAlert={props.showAlert} />
@@ -211,6 +236,11 @@ const filteredNotes = (notes || [])
       </div>
 
       {/* NOTES LIST */}
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <SortableContext
+        items={filteredNotes.map(n => n._id)}
+        strategy={verticalListSortingStrategy}
+      >
       <div className="row my-3">
         <h2>Your Notes ({filteredNotes.length})</h2>
 
@@ -232,7 +262,8 @@ const filteredNotes = (notes || [])
           />
         ))}
       </div>
-
+        </SortableContext>
+        </DndContext>
       {/* BLUR BACKGROUND */}
       {selectedNote && (
         <div

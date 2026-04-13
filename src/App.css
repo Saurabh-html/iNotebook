@@ -64,3 +64,10 @@ mark {
   padding: 0 2px;
   border-radius: 3px;
 }
+
+.card {
+  transition: all 0.2s ease;
+}
+.card:active {
+  transform: scale(1.02);
+}
