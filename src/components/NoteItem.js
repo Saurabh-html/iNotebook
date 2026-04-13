@@ -117,7 +117,6 @@ const NoteItem = (props) => {
                 ? highlightText(truncate(note?.title, 17), props.search)
                 : truncate(note?.title, 17)}
             </h5>
-            <div>
               <div className="d-flex flex-column align-items-end">
 
   {/* ROW 1 */}
@@ -203,7 +202,6 @@ const NoteItem = (props) => {
             )}
           </div>
         </div>
-      </div>
   );
 };
 
