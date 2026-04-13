@@ -118,6 +118,26 @@ const NoteState = (props) => {
     }
   };
 
+  const updateOrder = async (updatedNotes) => {
+  try {
+    await fetch(`${host}/api/notes/reorder`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem(config.TOKEN_KEY)
+      },
+      body: JSON.stringify({
+        notes: updatedNotes.map((n, index) => ({
+          id: n._id,
+          order: index
+        }))
+      })
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
   return (
     <NoteContext.Provider value={{
       notes,
@@ -126,6 +146,7 @@ const NoteState = (props) => {
       deleteNote,
       editNote,
       getNotes,
+      updateOrder,
       serverDown
     }}>
       {props.children}

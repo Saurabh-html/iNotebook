@@ -7,7 +7,7 @@ const { body, validationResult } = require('express-validator');
 // ROUTE 1: Get all notes
 router.get('/fetchallnotes', fetchuser, async (req, res) => {
   try {
-    const notes = await Note.find({ user: req.user.id }).lean();
+    const notes = await (await Note.find({ user: req.user.id })).toSorted({order:1}).lean();
     res.json(notes);
   } catch (error) {
     console.error(error.message);
@@ -126,6 +126,25 @@ router.delete('/deletenote/:id', fetchuser, async (req, res) => {
       success: true,
       message: "Note deleted"
     });
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// ROUTE: Update order of notes
+router.put('/reorder', fetchuser, async (req, res) => {
+  try {
+    const { notes } = req.body; // [{id, order}]
+
+    for (let item of notes) {
+      await Note.findByIdAndUpdate(item.id, {
+        $set: { order: item.order }
+      });
+    }
+
+    res.json({ success: true });
 
   } catch (error) {
     console.error(error.message);

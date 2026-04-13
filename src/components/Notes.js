@@ -119,11 +119,6 @@ const filteredNotes = (notes || [])
     }
 
     return true;
-  })
-  .sort((a, b) => {
-    const dateA = new Date(a.lastEditedAt || a.updatedAt || a.createdAt).getTime();
-    const dateB = new Date(b.lastEditedAt || b.updatedAt || b.createdAt).getTime();
-    return dateB - dateA;
   });
   const restoreVersion = async (id, version) => {
   await editNote(
@@ -149,6 +144,7 @@ const handleDragEnd = (event) => {
     const newOrder = arrayMove(filteredNotes, oldIndex, newIndex);
 
     context.setNotes(newOrder);
+    context.updateOrder(newOrder);
   }
 };
   return (
