@@ -25,7 +25,7 @@ router.post(
   ],
   async (req, res) => {
     try {
-      const { title, description, tag } = req.body;
+      const { title, description, tag, color } = req.body;
 
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -36,6 +36,7 @@ router.post(
         title,
         description,
         tag: Array.isArray(tag) ? tag : [tag],
+        color,
         user: req.user.id,
       });
 
@@ -51,7 +52,7 @@ router.post(
 
 // ROUTE 3: Update note (FINAL FIX)
 router.put('/updatenote/:id', fetchuser, async (req, res) => {
-  const { title, description, tag } = req.body;
+  const { title, description, tag, color } = req.body;
 
   try {
     const newNote = {};
@@ -59,6 +60,7 @@ router.put('/updatenote/:id', fetchuser, async (req, res) => {
     if (title) newNote.title = title;
     if (description) newNote.description = description;
     if (tag) newNote.tag = tag;
+    if (color) newNote.color = color;
 
     if (title || description || tag) {
       newNote.lastEditedAt = new Date();

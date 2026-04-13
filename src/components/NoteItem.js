@@ -45,7 +45,11 @@ const NoteItem = (props) => {
   return (
     <div className="col-md-3" onClick={() => props.openNote(note)} style={{ cursor: "pointer" }}>
 
-      <div className={`card my-3 ${props.mode === "dark" ? "bg-dark text-light border-secondary" : ""}`}>
+      <div className={`card my-3 ${props.mode === "dark" ? "bg-dark text-light border-secondary" : ""}`}
+  style={{
+    backgroundColor: note.color || (props.mode === "dark" ? "#1e1e1e" : "#fff")
+  }}
+>
         <div className="card-body">
 
           {/* DATE + TIME */}

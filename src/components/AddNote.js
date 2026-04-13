@@ -8,7 +8,8 @@ const AddNote = (props) => {
   const [note, setNote] = useState({
     title: "",
     description: "",
-    tag: ""
+    tag: "",
+    color: "#ffffff"
   });
 
   const handleClick = async (e) => {
@@ -19,10 +20,10 @@ const AddNote = (props) => {
       .map(tag => tag.trim())
       .filter(tag => tag !== "");
 
-    const success = await addNote(note.title, note.description, tagArray);
+    const success = await addNote(note.title, note.description, tagArray, note.color);
 
     if (success) {
-      setNote({ title: "", description: "", tag: "" });
+      setNote({ title: "", description: "", tag: "", color: "#ffffff" });
       props.showAlert("Added successfully", "success");
     } else {
       props.showAlert("Failed to add note", "danger");
@@ -88,6 +89,17 @@ const AddNote = (props) => {
             placeholder="comma separated (optional)"
           />
         </div>
+
+        <div className="mb-3">
+        <label className="form-label">Note Color</label>
+        <input
+          type="color"
+          className="form-control form-control-color"
+          name="color"
+          value={note.color}
+          onChange={onChange}
+        />
+      </div>
 
         <button
           type="submit"

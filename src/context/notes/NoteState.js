@@ -38,7 +38,7 @@ const NoteState = (props) => {
   };
 
   // ADD NOTE (FIXED)
-  const addNote = async (title, description, tag) => {
+  const addNote = async (title, description, tag, color) => {
     try {
       const response = await fetch(`${host}/api/notes/addnote`, {
         method: 'POST',
@@ -46,7 +46,7 @@ const NoteState = (props) => {
           'Content-Type': 'application/json',
           'auth-token': localStorage.getItem(config.TOKEN_KEY)
         },
-        body: JSON.stringify({ title, description, tag })
+        body: JSON.stringify({ title, description, tag, color })
       });
 
       if (!response.ok) throw new Error();
@@ -84,7 +84,7 @@ const NoteState = (props) => {
     }
   };
 
-  // ✅ EDIT NOTE (FIXED UPDATED TIME)
+  //  EDIT NOTE (FIXED UPDATED TIME)
   const editNote = async (id, title, description, tag) => {
     try {
       const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
