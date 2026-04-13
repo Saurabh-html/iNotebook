@@ -147,6 +147,19 @@ const handleDragEnd = (event) => {
     context.updateOrder(newOrder);
   }
 };
+const [summaryText, setSummaryText] = useState(null);
+const generateSummary = (note) => {
+  if (!note.description) {
+    props.showAlert("No content to summarize", "warning");
+    return;
+  }
+
+  // Simple summarization logic (first 2 sentences)
+  const sentences = note.description.split(/[.!?]/);
+  const summary = sentences.slice(0, 2).join(". ");
+
+  setSummaryText(summary);
+};
   return (
     <>
       <AddNote showAlert={props.showAlert} />
@@ -255,6 +268,7 @@ const handleDragEnd = (event) => {
             searchType={props.searchType}
             openNote={setSelectedNote}
             openHistory={setHistoryNote}
+            generateSummary={generateSummary}
           />
         ))}
       </div>
@@ -365,6 +379,33 @@ const handleDragEnd = (event) => {
       <button
         className="btn btn-danger mt-2"
         onClick={() => setHistoryNote(null)}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+{/* SUMMARY MODAL */}
+{summaryText && (
+  <div
+    className="d-flex justify-content-center align-items-center"
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      zIndex: 1200
+    }}
+  >
+    <div className="card p-3" style={{ width: "90%", maxWidth: "500px" }}>
+      <h5>Summary</h5>
+      <hr />
+      <p>{summaryText}</p>
+
+      <button
+        className="btn btn-danger"
+        onClick={() => setSummaryText(null)}
       >
         Close
       </button>

@@ -148,6 +148,15 @@ const style = {
                   }
                 }}
               ></i>
+              {/* SUMMARY */}
+              <i
+                className="fa-solid fa-wand-magic-sparkles mx-2"
+                style={{ cursor: "pointer" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.generateSummary(note);
+                }}
+              ></i>
             </div>
           </div>
 
