@@ -7,7 +7,9 @@ const { body, validationResult } = require('express-validator');
 // ROUTE 1: Get all notes
 router.get('/fetchallnotes', fetchuser, async (req, res) => {
   try {
-    const notes = await (await Note.find({ user: req.user.id })).toSorted({order:1}).lean();
+    const notes = await Note.find({ user: req.user.id })
+  .sort({ order: 1 })
+  .lean();
     res.json(notes);
   } catch (error) {
     console.error(error.message);

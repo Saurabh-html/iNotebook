@@ -149,7 +149,7 @@ const suggestTags = (text) => {
           className={`btn btn-${isListening ? "danger" : "secondary"} mt-2`}
           onClick={startListening}
         >
-          {isListening ? "Listening..." : "Speak (in Hindi or English)"}
+          {isListening ? "Listening..." : "Speech to text (Hindi or English))"}
         </button>
 
         <div className="mb-3">
