@@ -50,11 +50,39 @@ router.post(
   }
 );
 
-// ROUTE 3: Update note (FINAL FIX)
+
+
+// ROUTE 3: Update note (FINAL WITH HISTORY)
 router.put('/updatenote/:id', fetchuser, async (req, res) => {
   const { title, description, tag, color } = req.body;
 
   try {
+    let note = await Note.findById(req.params.id);
+    if (!note) return res.status(404).send("Not Found");
+
+    if (note.user.toString() !== req.user.id) {
+      return res.status(401).send("Not Allowed");
+    }
+
+    // SAVE HISTORY (BEFORE UPDATE)
+    note.history = note.history || [];
+
+    note.history.push({
+      title: note.title,
+      description: note.description,
+      tag: note.tag,
+      color: note.color,
+      editedAt: new Date()
+    });
+
+    // KEEP ONLY LAST 5 VERSIONS
+    if (note.history.length > 5) {
+      note.history = note.history.slice(-5);
+    }
+
+    await note.save();
+
+    // BUILD UPDATE OBJECT
     const newNote = {};
 
     if (title) newNote.title = title;
@@ -66,13 +94,7 @@ router.put('/updatenote/:id', fetchuser, async (req, res) => {
       newNote.lastEditedAt = new Date();
     }
 
-    let note = await Note.findById(req.params.id);
-    if (!note) return res.status(404).send("Not Found");
-
-    if (note.user.toString() !== req.user.id) {
-      return res.status(401).send("Not Allowed");
-    }
-
+    // APPLY UPDATE
     note = await Note.findByIdAndUpdate(
       req.params.id,
       { $set: newNote },

@@ -26,10 +26,20 @@ color: {
   type: String,
   default: "#ffffff"
 },
+history: [
+  {
+    title: String,
+    description: String,
+    tag: [String],
+    color: String,
+    editedAt: Date
+  }
+],
   date:{
     type: Date,
     default: Date.now()
   },
-}, {timestamps:true});
+}, 
+{timestamps:true});
 
 module.exports = mongoose.model('notes', NotesSchema);

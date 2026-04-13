@@ -31,6 +31,7 @@ const Notes = (props) => {
   });
 
   const [selectedNote, setSelectedNote] = useState(null);
+  const [historyNote, setHistoryNote] = useState(null);
 
   const ref = useRef(null);
   const refClose = useRef(null);
@@ -114,6 +115,17 @@ const filteredNotes = (notes || [])
     const dateB = new Date(b.lastEditedAt || b.updatedAt || b.createdAt).getTime();
     return dateB - dateA;
   });
+  const restoreVersion = async (id, version) => {
+  await editNote(
+    id,
+    version.title,
+    version.description,
+    version.tag,
+    version.color
+  );
+
+  props.showAlert("Version restored", "success");
+};
   return (
     <>
       <AddNote showAlert={props.showAlert} />
@@ -216,6 +228,7 @@ const filteredNotes = (notes || [])
             search={props.search}
             searchType={props.searchType}
             openNote={setSelectedNote}
+            openHistory={setHistoryNote}
           />
         ))}
       </div>
@@ -278,6 +291,59 @@ const filteredNotes = (notes || [])
           </div>
         </div>
       )}
+      {/* HISTORY MODAL */}
+{historyNote && (
+  <div
+    className="d-flex justify-content-center align-items-center"
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      zIndex: 1100
+    }}
+  >
+    <div
+      className={`card p-3 ${props.mode === "dark" ? "bg-dark text-light border-secondary" : ""}`}
+      style={{
+        width: "90%",
+        maxWidth: "600px",
+        maxHeight: "80vh",
+        overflowY: "auto"
+      }}
+    >
+      <h5>Version History</h5>
+      <hr />
+
+      {historyNote.history && historyNote.history.length > 0 ? (
+        historyNote.history.slice().reverse().map((h, index) => (
+          <div key={index} className="border p-2 mb-2 rounded">
+            <strong>{h.title}</strong>
+            <p style={{ whiteSpace: "pre-wrap" }}>{h.description}</p>
+            <small>{new Date(h.editedAt).toLocaleString()}</small>
+
+            <button
+              className="btn btn-sm btn-primary mt-1"
+              onClick={() => restoreVersion(historyNote._id, h)}
+            >
+              Restore
+            </button>
+          </div>
+        ))
+      ) : (
+        <p>No history available</p>
+      )}
+
+      <button
+        className="btn btn-danger mt-2"
+        onClick={() => setHistoryNote(null)}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
     </>
   );
 };

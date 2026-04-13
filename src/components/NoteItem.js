@@ -83,6 +83,15 @@ const NoteItem = (props) => {
                 }}
               ></i>
 
+              <i
+                className="fa-solid fa-clock-rotate-left mx-2"
+                style={{ cursor: "pointer" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.openHistory(note);
+                }}
+              ></i>
+
               {/* DELETE */}
               <i
                 className="fa-solid fa-trash mx-2"
