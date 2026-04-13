@@ -165,15 +165,6 @@ const NoteItem = (props) => {
                     }} />
                   <span>Share</span>
                 </div>
-
-                <div className="icon-wrapper">
-                  <i className="fa-solid fa-wand-magic-sparkles mx-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      props.generateSummary(note);
-                    }} />
-                  <span>Summary</span>
-                </div>
               </div>
 
             </div>
