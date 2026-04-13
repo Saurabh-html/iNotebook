@@ -4,7 +4,7 @@ import noteContext from "../context/notes/noteContext"
 const AddNote = (props) => {
   const context = useContext(noteContext);
   const { addNote } = context;
-
+  const [isListening, setIsListening] = useState(false);
   const [note, setNote] = useState({
     title: "",
     description: "",
@@ -37,6 +37,44 @@ const AddNote = (props) => {
   const isFormValid =
     note.title.trim().length >= 3 &&
     note.description.trim().length >= 5;
+
+    const startListening = () => {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    props.showAlert("Voice not supported in this browser", "danger");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.continuous = false;
+
+  setIsListening(true);
+
+  recognition.start();
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+
+    setNote((prev) => ({
+      ...prev,
+      description: prev.description + " " + transcript
+    }));
+
+    setIsListening(false);
+  };
+  recognition.lang = "hi-IN";
+  recognition.onerror = () => {
+    setIsListening(false);
+    props.showAlert("Voice recognition error", "danger");
+  };
+
+  recognition.onend = () => {
+    setIsListening(false);
+  };
+};
 
   return (
     <div className="container my-3">
@@ -76,6 +114,14 @@ const AddNote = (props) => {
             </small>
           )}
         </div>
+
+        <button
+          type="button"
+          className={`btn btn-${isListening ? "danger" : "secondary"} mt-2`}
+          onClick={startListening}
+        >
+          {isListening ? "Listening..." : "🎤 Speak"}
+        </button>
 
         <div className="mb-3">
           <label htmlFor="tag" className="form-label">Tag</label>
