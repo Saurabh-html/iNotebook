@@ -74,34 +74,43 @@ const Notes = (props) => {
     }
   }, [selectedNote]);
 
-  //  FILTER + SORT (PINNED FIRST → LATEST FIRST)
-  const filteredNotes = (notes || [])
-    .filter((n) => {
-      if (!props.search) return true;
+  //  FILTER + SORT 
+const filteredNotes = (notes || [])
+  .filter((n) => {
+    if (!props.search) return true;
 
-      if (props.searchType === "title") {
-        return n.title?.toLowerCase().includes(props.search.toLowerCase());
-      }
+    const query = props.search.toLowerCase();
 
-      if (props.searchType === "tag") {
-        const tags = Array.isArray(n.tag)
-          ? n.tag
-          : typeof n.tag === "string"
-            ? n.tag.split(',').map(t => t.trim())
-            : [];
+    // TITLE SEARCH
+    if (props.searchType === "title") {
+      return n.title?.toLowerCase().includes(query);
+    }
 
-        return tags.some(tag =>
-          tag.toLowerCase().includes(props.search.toLowerCase())
-        );
-      }
+    // DESCRIPTION SEARCH 
+    if (props.searchType === "description") {
+      return n.description?.toLowerCase().includes(query);
+    }
 
-      return true;
-    })
-.sort((a, b) => {
-  const dateA = new Date(a.lastEditedAt || a.updatedAt || a.createdAt).getTime();
-  const dateB = new Date(b.lastEditedAt || b.updatedAt || b.createdAt).getTime();
-  return dateB - dateA;
-});
+    // TAG SEARCH
+    if (props.searchType === "tag") {
+      const tags = Array.isArray(n.tag)
+        ? n.tag
+        : typeof n.tag === "string"
+          ? n.tag.split(',').map(t => t.trim())
+          : [];
+
+      return tags.some(tag =>
+        tag.toLowerCase().includes(query)
+      );
+    }
+
+    return true;
+  })
+  .sort((a, b) => {
+    const dateA = new Date(a.lastEditedAt || a.updatedAt || a.createdAt).getTime();
+    const dateB = new Date(b.lastEditedAt || b.updatedAt || b.createdAt).getTime();
+    return dateB - dateA;
+  });
   return (
     <>
       <AddNote showAlert={props.showAlert} />
@@ -192,6 +201,7 @@ const Notes = (props) => {
             showAlert={props.showAlert}
             note={n}
             search={props.search}
+            searchType={props.searchType}
             openNote={setSelectedNote}
           />
         ))}

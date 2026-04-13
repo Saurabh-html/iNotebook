@@ -104,6 +104,7 @@ const Navbar = ({ search, setSearch, searchType, setSearchType, theme, setTheme 
                 onChange={(e) => setSearchType(e.target.value)}
               >
                 <option value="title">Title</option>
+                <option value="description">Description</option>
                 <option value="tag">Tag</option>
               </select>
 

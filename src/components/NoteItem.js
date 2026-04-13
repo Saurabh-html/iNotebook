@@ -65,8 +65,7 @@ const NoteItem = (props) => {
 
           {/* TITLE + ACTIONS */}
           <div className="d-flex justify-content-between align-items-center mt-1">
-            <h5 className="card-title mb-0">{highlightText(truncate(note?.title, 17), props.search)}</h5>
-
+            <h5 className="card-title mb-0">{props.searchType === "title"  ? highlightText(truncate(note?.title, 17), props.search)  : truncate(note?.title, 17)}</h5>
             <div>
     
 
@@ -122,8 +121,7 @@ const NoteItem = (props) => {
             </div>
           </div>
 
-          <p className="card-text mt-2">{highlightText(truncate(note?.description, 55), props.search)}</p>
-
+          <p className="card-text mt-2">{props.searchType === "description"  ? highlightText(truncate(note?.description, 55), props.search)  : truncate(note?.description, 55)}</p>
           <div className="mt-2">
             {tags.length > 0 ? (
               tags.map((t, index) => (
