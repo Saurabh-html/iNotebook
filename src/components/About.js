@@ -74,7 +74,6 @@ const About = () => {
 
           <h4 className="fw-semibold mt-4">🌍 Smart Features</h4>
           <ul>
-            <li>🌐 Manual Translation (English, Hindi, Marathi)</li>
             <li>🧠 Intelligent UI interactions</li>
             <li>⚙️ Modular and scalable architecture</li>
           </ul>
