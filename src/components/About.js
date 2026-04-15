@@ -19,7 +19,7 @@ const About = () => {
       {/* HEADER */}
       <div className="text-center mb-5">
         <h1 className="fw-bold">About iNotebook</h1>
-        <p className="text-muted">
+        <p className="fw-semibold">
           A modern, secure and intelligent note management system built with MERN Stack.
         </p>
       </div>
