@@ -102,7 +102,7 @@ const About = () => {
       <div className="text-center mt-5">
         <hr />
         <p className="text-muted">
-          Built with ❤️ using MERN Stack by Saurabh Suman
+          Built with ❤️ using MERN Stack by S.
         </p>
       </div>
 
