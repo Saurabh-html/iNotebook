@@ -7,9 +7,21 @@ const { body, validationResult } = require('express-validator');
 // ROUTE 1: Get all notes
 router.get('/fetchallnotes', fetchuser, async (req, res) => {
   try {
-    const notes = await Note.find({ user: req.user.id })
-  .sort({ order: 1 })
-  .lean();
+    const notes = await Note.find({ user: req.user.id }).lean();
+
+// MANUAL NOTES
+const manualNotes = notes
+  .filter(n => n.isManuallyOrdered)
+  .sort((a, b) => a.order - b.order);
+
+// AUTO NOTES
+const autoNotes = notes
+  .filter(n => !n.isManuallyOrdered)
+  .sort((a, b) => {
+    return new Date(b.updatedAt) - new Date(a.updatedAt);
+  });
+
+res.json([...manualNotes, ...autoNotes]);
     res.json(notes);
   } catch (error) {
     console.error(error.message);
@@ -138,11 +150,14 @@ router.delete('/deletenote/:id', fetchuser, async (req, res) => {
 // ROUTE: Update order of notes
 router.put('/reorder', fetchuser, async (req, res) => {
   try {
-    const { notes } = req.body; // [{id, order}]
+    const { notes } = req.body;
 
     for (let item of notes) {
       await Note.findByIdAndUpdate(item.id, {
-        $set: { order: item.order }
+        $set: {
+          order: item.order,
+          isManuallyOrdered: true
+        }
       });
     }
 

@@ -35,6 +35,14 @@ history: [
     editedAt: Date
   }
 ],
+order: {
+  type: Number,
+  default: null
+},
+isManuallyOrdered: {
+  type: Boolean,
+  default: false
+},
   date:{
     type: Date,
     default: Date.now()

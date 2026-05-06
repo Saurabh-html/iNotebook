@@ -135,17 +135,21 @@ const filteredNotes = (notes || [])
 const handleDragEnd = (event) => {
   const { active, over } = event;
 
-  if (!over) return;
+  if (!over || active.id === over.id) return;
 
-  if (active.id !== over.id) {
-    const oldIndex = filteredNotes.findIndex(n => n._id === active.id);
-    const newIndex = filteredNotes.findIndex(n => n._id === over.id);
+  const oldIndex = notes.findIndex(n => n._id === active.id);
+  const newIndex = notes.findIndex(n => n._id === over.id);
 
-    const newOrder = arrayMove(filteredNotes, oldIndex, newIndex);
+  const reordered = arrayMove(notes, oldIndex, newIndex);
 
-    context.setNotes(newOrder);
-    context.updateOrder(newOrder);
-  }
+  const updated = reordered.map((note, index) => ({
+    ...note,
+    order: index,
+    isManuallyOrdered: true
+  }));
+
+  context.setNotes(updated);
+  context.updateOrder(updated);
 };
 
   return (

@@ -53,7 +53,7 @@ const NoteState = (props) => {
 
       const json = await response.json();
 
-      setNotes(prev => [...prev, json]);
+      setNotes(prev => [json, ...prev]);
       return true;
 
     } catch (error) {
@@ -105,6 +105,16 @@ const NoteState = (props) => {
       for (let i = 0; i < newNotes.length; i++) {
         if (newNotes[i]._id === id) {
           newNotes[i] = json; // IMPORTANT FIX (includes updatedAt)
+          newNotes.sort((a, b) => {
+            if (a.isManuallyOrdered && b.isManuallyOrdered) {
+              return a.order - b.order;
+            }
+
+            if (a.isManuallyOrdered) return -1;
+            if (b.isManuallyOrdered) return 1;
+
+            return new Date(b.updatedAt) - new Date(a.updatedAt);
+          });
           break;
         }
       }
