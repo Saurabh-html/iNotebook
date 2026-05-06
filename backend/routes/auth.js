@@ -497,28 +497,83 @@ try {
 }
 })
 
-// ROUTE 4: Forgot Password
+// ROUTE: Forgot Password WITH OTP
 router.post('/forgotpassword', async (req, res) => {
-    const { email, password } = req.body;
+
+    const {
+        email,
+        password,
+        otp
+    } = req.body;
 
     try {
+
+        // FIND USER
         let user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(400).json({ success: false, error: "User not found" });
+
+            return res.status(400).json({
+                success: false,
+                error: "Email not found"
+            });
         }
 
-        // Hash new password
-        const salt = await bcrypt.genSalt(10);
-        const secPass = await bcrypt.hash(password, salt);
+        // VERIFY OTP
+        const recentOtp = await Otp.findOne({ email });
 
+        if (!recentOtp) {
+
+            return res.status(400).json({
+                success: false,
+                error: "OTP expired"
+            });
+        }
+
+        // CHECK OTP MATCH
+        if (recentOtp.otp !== otp) {
+
+            return res.status(400).json({
+                success: false,
+                error: "Invalid OTP"
+            });
+        }
+
+        // DELETE OTP AFTER SUCCESS
+        await Otp.deleteMany({ email });
+
+        // VALIDATE PASSWORD
+        if (password.length < 5) {
+
+            return res.status(400).json({
+                success: false,
+                error: "Password must be at least 5 characters"
+            });
+        }
+
+        // HASH PASSWORD
+        const salt = await bcrypt.genSalt(10);
+
+        const secPass =
+            await bcrypt.hash(password, salt);
+
+        // UPDATE PASSWORD
         user.password = secPass;
+
+        // REMOVE OLD REFRESH TOKEN
+        user.refreshToken = null;
+
         await user.save();
 
-        res.json({ success: true, message: "Password updated successfully" });
+        res.json({
+            success: true,
+            message: "Password updated successfully"
+        });
 
     } catch (error) {
+
         console.log(error.message);
+
         res.status(500).send("Internal Server Error");
     }
 });
@@ -644,5 +699,76 @@ router.post('/logout', fetchuser, async (req, res) => {
     }
 });
 
+// SEND OTP FOR FORGOT PASSWORD
+router.post('/send-forgot-otp', async (req, res) => {
+
+    try {
+
+        const { email } = req.body;
+
+        // CHECK USER EXISTS
+        const user = await User.findOne({ email });
+
+        if (!user) {
+
+            return res.status(400).json({
+                success: false,
+                message: "Email not registered"
+            });
+        }
+
+        // GENERATE OTP
+        const otp = otpGenerator.generate(6, {
+
+            upperCaseAlphabets: false,
+            lowerCaseAlphabets: false,
+            specialChars: false
+        });
+
+        // DELETE OLD OTP
+        await Otp.deleteMany({ email });
+
+        // SAVE OTP
+        await Otp.create({
+            email,
+            otp
+        });
+
+        // SEND EMAIL
+        await transporter.sendMail({
+
+            from: `"iNotebook Security" <${process.env.EMAIL_USER}>`,
+
+            to: email,
+
+            subject: "Password Reset OTP",
+
+            html: `
+                <div style="font-family:sans-serif">
+
+                    <h2>Password Reset</h2>
+
+                    <p>Your OTP is:</p>
+
+                    <h1>${otp}</h1>
+
+                    <p>OTP expires in 5 minutes.</p>
+
+                </div>
+            `
+        });
+
+        res.json({
+            success: true,
+            message: "OTP sent successfully"
+        });
+
+    } catch (error) {
+
+        console.log(error.message);
+
+        res.status(500).send("Internal Server Error");
+    }
+});
 
 module.exports = router;
