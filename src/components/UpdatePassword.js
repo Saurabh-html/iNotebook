@@ -118,11 +118,17 @@ const UpdatePassword = (props) => {
 
     if (json.success) {
 
-      props.showAlert("Password updated successfully", "success");
+  localStorage.removeItem("token");
 
-      navigate("/");
+  localStorage.removeItem("refreshToken");
 
-    } else {
+  props.showAlert(
+    "Password updated successfully. Please login again.",
+    "success"
+  );
+
+  navigate("/login");
+} else {
 
       props.showAlert(json.error, "danger");
     }

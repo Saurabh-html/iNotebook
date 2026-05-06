@@ -33,7 +33,7 @@ const Login = (props) => {
       return;
     }
 
-    if (json.authtoken) {
+    if (json.success) {
       localStorage.setItem('token', json.accessToken);
       localStorage.setItem('refreshToken', json.refreshToken);
       navigate("/", { replace: true });
