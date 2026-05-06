@@ -245,3 +245,38 @@ body.dark .icon-wrapper span {
     font-size: 30px;
   }
 }
+
+/* OTP CONTAINER */
+.otp-container{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:22px;
+}
+
+/* OTP BOX */
+.otp-box{
+  width:52px;
+  height:58px;
+  border:none;
+  outline:none;
+  border-radius:14px;
+  text-align:center;
+  font-size:24px;
+  font-weight:800;
+  background:#f8fafc;
+  border:1px solid #dbe4f0;
+  transition:0.25s ease;
+}
+
+.otp-box:focus{
+  border-color:#4f46e5;
+  box-shadow:0 0 0 4px rgba(79,70,229,0.12);
+  transform:translateY(-2px);
+}
+
+body.dark .otp-box{
+  background:#1e293b;
+  color:white;
+  border:1px solid rgba(255,255,255,0.08);
+}

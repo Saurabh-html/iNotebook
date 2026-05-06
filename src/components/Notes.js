@@ -243,7 +243,7 @@ const handleDragEnd = (event) => {
         strategy={verticalListSortingStrategy}
       >
       <div className="row my-3">
-        <h2>Your Notes ({filteredNotes.length})</h2>
+        <h2 className="fw-bold display-6">Your Notes ({filteredNotes.length})</h2>
 
         {Array.isArray(notes) && notes.length === 0 && (
           <p>No notes to display</p>

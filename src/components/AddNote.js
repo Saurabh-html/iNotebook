@@ -13,6 +13,7 @@ const AddNote = (props) => {
   });
 
   const handleClick = async (e) => {
+
     e.preventDefault();
 
     const tagArray = note.tag
@@ -33,11 +34,6 @@ const AddNote = (props) => {
   const onChange = (e) => {
     const updatedNote = { ...note, [e.target.name]: e.target.value };
 
-// Auto tag suggestion from description
-if (e.target.name === "description") {
-  const autoTags = suggestTags(e.target.value);
-  updatedNote.tag = autoTags.join(", ");
-}
 
 setNote(updatedNote);
   };
@@ -83,31 +79,11 @@ setNote(updatedNote);
     setIsListening(false);
   };
 };
-const suggestTags = (text) => {
-  const keywords = {
-    react: "React",
-    api: "API",
-    exam: "Study",
-    meeting: "Work",
-    project: "Project",
-    food: "Personal",
-    health: "Health"
-  };
 
-  const foundTags = [];
-
-  for (let key in keywords) {
-    if (text.toLowerCase().includes(key)) {
-      foundTags.push(keywords[key]);
-    }
-  }
-
-  return foundTags;
-};
 
   return (
     <div className="container my-3">
-      <h2>Add a Note</h2>
+      <h2 className="fw-bold display-6">Add a Note</h2>
 
       <form>
         <div className="mb-3">
