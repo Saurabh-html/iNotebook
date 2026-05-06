@@ -157,7 +157,7 @@ router.post('/sendotp', async (req, res) => {
             }
         ],
 
-        subject: 'Password Reset OTP',
+        subject: 'Verify Your iNotebook Account',
 
         htmlContent: `
 
@@ -166,7 +166,7 @@ router.post('/sendotp', async (req, res) => {
                 padding: 30px;
             ">
 
-                <h2>Password Reset</h2>
+                <h2>Email Verification</h2>
 
                 <p>Your OTP is:</p>
 
@@ -262,7 +262,7 @@ router.post('/send-update-otp', fetchuser, async (req, res) => {
             }
         ],
 
-        subject: 'Password Reset OTP',
+        subject: 'Password Update Verification',
 
         htmlContent: `
 
@@ -302,11 +302,6 @@ res.json({
     success: true,
     message: "OTP sent successfully"
 });
-
-        res.json({
-            success: true,
-            message: "OTP sent successfully"
-        });
 
     } catch (error) {
 
@@ -749,7 +744,7 @@ router.post('/send-forgot-otp', async (req, res) => {
                                 <h2>Hello 👋</h2>
 
                                 <p>
-                                    Use the OTP below to reset your password.
+                                   Use the OTP below to verify your email address.
                                 </p>
 
                                 <div style="
