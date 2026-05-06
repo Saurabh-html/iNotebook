@@ -7,13 +7,34 @@ const Navbar = ({ search, setSearch, searchType, setSearchType, theme, setTheme 
   let location = useLocation();
 
   const [user, setUser] = useState(null);
-  const token = localStorage.getItem(config.TOKEN_KEY);
+  const token = localStorage.getItem("token");
 
-  const handleLogout = () => {
-    localStorage.removeItem(config.TOKEN_KEY);
-    setUser(null);
-    navigate("/login");
-  };
+const handleLogout = async () => {
+
+  try {
+
+    await fetch(`${config.API_URL}/api/auth/logout`, {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": token
+      }
+    });
+
+  } catch (error) {
+
+    console.log(error);
+  }
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("refreshToken");
+
+  setUser(null);
+
+  navigate("/login");
+};
 
   const handleProtectedRoute = (path) => {
     if (!token) {

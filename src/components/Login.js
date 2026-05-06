@@ -34,7 +34,8 @@ const Login = (props) => {
     }
 
     if (json.authtoken) {
-      localStorage.setItem(config.TOKEN_KEY, json.authtoken);
+      localStorage.setItem('token', json.accessToken);
+      localStorage.setItem('refreshToken', json.refreshToken);
       navigate("/", { replace: true });
       props.showAlert("Logged in Successfully", "success");
     } else {

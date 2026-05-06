@@ -7,7 +7,7 @@ import NoteState from './context/notes/NoteState';
 import Alert from './components/Alert';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ForgotPassword from './components/ForgotPassword';
 import UpdatePassword from './components/UpdatePassword';
 import config from "./config";
@@ -30,7 +30,112 @@ const [theme, setTheme] = useState("light");
   document.body.className = theme === "dark" ? "bg-dark text-light" : "bg-light text-dark";
 }, [theme]);
 
-  const isLoggedIn = localStorage.getItem(config.TOKEN_KEY);
+const logout = useCallback(() => {
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("refreshToken");
+
+  window.location.href = "/login";
+
+}, []);
+
+useEffect(() => {
+
+  let inactivityTimer;
+
+  let refreshInterval;
+
+  const refreshAccessToken = async () => {
+
+    const refreshToken =
+      localStorage.getItem("refreshToken");
+
+    if (!refreshToken) {
+      logout();
+      return;
+    }
+
+    try {
+
+      const response = await fetch(
+        `${config.API_URL}/api/auth/refresh`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            refreshToken
+          })
+        }
+      );
+
+      const json = await response.json();
+
+      if (json.success) {
+
+        localStorage.setItem(
+          "token",
+          json.accessToken
+        );
+
+      } else {
+
+        logout();
+      }
+
+    } catch (error) {
+
+      logout();
+    }
+  };
+
+  const resetTimer = () => {
+
+    clearTimeout(inactivityTimer);
+
+    inactivityTimer = setTimeout(() => {
+
+      logout();
+
+    }, 15 * 60 * 1000);
+  };
+
+  const events = [
+    "mousemove",
+    "keydown",
+    "click",
+    "scroll"
+  ];
+
+  events.forEach(event => {
+    window.addEventListener(event, resetTimer);
+  });
+
+  resetTimer();
+
+  refreshInterval = setInterval(() => {
+
+    refreshAccessToken();
+
+  }, 10 * 60 * 1000);
+
+  return () => {
+
+    clearTimeout(inactivityTimer);
+
+    clearInterval(refreshInterval);
+
+    events.forEach(event => {
+      window.removeEventListener(event, resetTimer);
+    });
+  };
+
+}, [logout]);
+
+  const isLoggedIn = localStorage.getItem("token");
 
   return (
     <NoteState>

@@ -8,8 +8,10 @@ const fetchuser = require('../middleware/fetchuser');
 const nodemailer = require('nodemailer');
 const otpGenerator = require('otp-generator');
 const Otp = require('../models/Otp');
+module.exports = router;
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
 
 const transporter = nodemailer.createTransport({
@@ -20,6 +22,41 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS
   }
 });
+
+// Token Generator
+const generateAccessToken = (user) => {
+
+    return jwt.sign(
+        {
+            user: {
+                id: user.id
+            }
+        },
+
+        ACCESS_TOKEN_SECRET,
+
+        {
+            expiresIn: '15m'
+        }
+    );
+};
+
+const generateRefreshToken = (user) => {
+
+    return jwt.sign(
+        {
+            user: {
+                id: user.id
+            }
+        },
+
+        REFRESH_TOKEN_SECRET,
+
+        {
+            expiresIn: '7d'
+        }
+    );
+};
 
 router.post('/sendotp', async (req, res) => {
 
@@ -211,6 +248,129 @@ router.post('/sendotp', async (req, res) => {
   }
 });
 
+// SEND OTP FOR PASSWORD UPDATE
+router.post('/send-update-otp', fetchuser, async (req, res) => {
+
+    try {
+
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        const email = user.email;
+
+        // GENERATE OTP
+        const otp = otpGenerator.generate(6, {
+            upperCaseAlphabets: false,
+            lowerCaseAlphabets: false,
+            specialChars: false
+        });
+
+        // DELETE OLD OTP
+        await Otp.deleteMany({ email });
+
+        // SAVE NEW OTP
+        await Otp.create({
+            email,
+            otp
+        });
+
+        // SEND EMAIL
+        await transporter.sendMail({
+
+            from: `"iNotebook Security" <${process.env.EMAIL_USER}>`,
+
+            to: email,
+
+            subject: "Password Change Verification",
+
+            html: `
+            <div style="
+                font-family: Arial,sans-serif;
+                background:#f4f7fb;
+                padding:40px;
+            ">
+
+                <div style="
+                    max-width:500px;
+                    margin:auto;
+                    background:white;
+                    border-radius:16px;
+                    overflow:hidden;
+                    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+                ">
+
+                    <div style="
+                        background:linear-gradient(135deg,#4f46e5,#7c3aed);
+                        color:white;
+                        text-align:center;
+                        padding:30px;
+                    ">
+
+                        <h1>iNotebook</h1>
+
+                        <p>Password Update Verification</p>
+
+                    </div>
+
+                    <div style="padding:35px;">
+
+                        <h2>Hello 👋</h2>
+
+                        <p>
+                            Use the OTP below to verify your password update request.
+                        </p>
+
+                        <div style="
+                            text-align:center;
+                            margin:30px 0;
+                        ">
+
+                            <span style="
+                                display:inline-block;
+                                background:#eef2ff;
+                                color:#4f46e5;
+                                padding:16px 28px;
+                                font-size:32px;
+                                font-weight:700;
+                                border-radius:12px;
+                                letter-spacing:8px;
+                            ">
+                                ${otp}
+                            </span>
+
+                        </div>
+
+                        <p>
+                            OTP expires in <b>5 minutes</b>.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+            `
+        });
+
+        res.json({
+            success: true,
+            message: "OTP sent successfully"
+        });
+
+    } catch (error) {
+
+        console.log(error.message);
+
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 //ROUTE 1: Create a User using: POST "/api/auth/createuser". No login required
 router.post('/createuser', [
     body('name', 'Enter a valid name').isLength({min:3}),
@@ -261,14 +421,21 @@ router.post('/createuser', [
                 password: secPass,
                 email,
             });
-        const data={
-            user:{
-                id: user.id
-            }
-        }
-        const authtoken = jwt.sign(data, JWT_SECRET);
-        success=true;
-        res.json({success, authtoken})
+        const accessToken = generateAccessToken(user);
+
+const refreshToken = generateRefreshToken(user);
+
+user.refreshToken = refreshToken;
+
+await user.save();
+
+success = true;
+
+res.json({
+    success,
+    accessToken,
+    refreshToken
+});
     } catch (error){
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -297,14 +464,21 @@ router.post('/login', [
             success = false;
             return res.status(400).json({success, error: "Please try to login using correct credentials"});
         }
-        const data={
-            user:{
-                id: user.id
-            }
-        }
-        const authtoken = jwt.sign(data, JWT_SECRET);
-        success = true;
-        res.json({success, authtoken})
+        const accessToken = generateAccessToken(user);
+
+const refreshToken = generateRefreshToken(user);
+
+user.refreshToken = refreshToken;
+
+await user.save();
+
+success = true;
+
+res.json({
+    success,
+    accessToken,
+    refreshToken
+});
     } catch(error){
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -351,7 +525,7 @@ router.post('/forgotpassword', async (req, res) => {
 
 // ROUTE 5: Update Password (Logged in user)
 router.post('/updatepassword', fetchuser, async (req, res) => {
-    const { oldPassword, newPassword } = req.body;
+    const { oldPassword, newPassword, otp } = req.body;
 
     try {
         let user = await User.findById(req.user.id);
@@ -361,6 +535,26 @@ router.post('/updatepassword', fetchuser, async (req, res) => {
         if (!passwordCompare) {
             return res.status(400).json({ success: false, error: "Incorrect current password" });
         }
+
+        // VERIFY OTP
+const recentOtp = await Otp.findOne({ email: user.email });
+
+if (!recentOtp) {
+    return res.status(400).json({
+        success: false,
+        error: "OTP expired"
+    });
+}
+
+if (recentOtp.otp !== otp) {
+    return res.status(400).json({
+        success: false,
+        error: "Invalid OTP"
+    });
+}
+
+// DELETE OTP AFTER SUCCESS
+await Otp.deleteMany({ email: user.email });
 
         // Hash new password
         const salt = await bcrypt.genSalt(10);
@@ -376,5 +570,79 @@ router.post('/updatepassword', fetchuser, async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+
+// REFRESH ACCESS TOKEN
+router.post('/refresh', async (req, res) => {
+
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+
+        return res.status(401).json({
+            success: false,
+            error: "Refresh token missing"
+        });
+    }
+
+    try {
+
+        const decoded = jwt.verify(
+            refreshToken,
+            REFRESH_TOKEN_SECRET
+        );
+
+        const user = await User.findById(decoded.user.id);
+
+        if (
+            !user ||
+            user.refreshToken !== refreshToken
+        ) {
+
+            return res.status(403).json({
+                success: false,
+                error: "Invalid refresh token"
+            });
+        }
+
+        const newAccessToken =
+            generateAccessToken(user);
+
+        res.json({
+            success: true,
+            accessToken: newAccessToken
+        });
+
+    } catch (error) {
+
+        res.status(403).json({
+            success: false,
+            error: "Refresh token expired"
+        });
+    }
+});
+
+// LOGOUT
+router.post('/logout', fetchuser, async (req, res) => {
+
+    try {
+
+        const user = await User.findById(req.user.id);
+
+        user.refreshToken = null;
+
+        await user.save();
+
+        res.json({
+            success: true
+        });
+
+    } catch (error) {
+
+        console.log(error.message);
+
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 
 module.exports = router;
