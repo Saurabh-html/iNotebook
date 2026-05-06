@@ -704,10 +704,16 @@ router.post('/send-forgot-otp', async (req, res) => {
 
     try {
 
+        console.log("STEP 1");
+
         const { email } = req.body;
 
-        // CHECK USER EXISTS
+        console.log("EMAIL:", email);
+
+        // CHECK USER
         const user = await User.findOne({ email });
+
+        console.log("STEP 2");
 
         if (!user) {
 
@@ -725,8 +731,12 @@ router.post('/send-forgot-otp', async (req, res) => {
             specialChars: false
         });
 
+        console.log("OTP:", otp);
+
         // DELETE OLD OTP
         await Otp.deleteMany({ email });
+
+        console.log("STEP 3");
 
         // SAVE OTP
         await Otp.create({
@@ -734,29 +744,24 @@ router.post('/send-forgot-otp', async (req, res) => {
             otp
         });
 
-        // SEND EMAIL
-        await transporter.sendMail({
+        console.log("STEP 4");
 
-            from: `"iNotebook Security" <${process.env.EMAIL_USER}>`,
+        // SEND EMAIL
+        const info = await transporter.sendMail({
+
+            from: process.env.EMAIL_USER,
 
             to: email,
 
-            subject: "Password Reset OTP",
+            subject: "Reset Password OTP",
 
             html: `
-                <div style="font-family:sans-serif">
-
-                    <h2>Password Reset</h2>
-
-                    <p>Your OTP is:</p>
-
-                    <h1>${otp}</h1>
-
-                    <p>OTP expires in 5 minutes.</p>
-
-                </div>
+                <h2>Your OTP is ${otp}</h2>
             `
         });
+
+        console.log("MAIL SENT");
+        console.log(info);
 
         res.json({
             success: true,
@@ -765,10 +770,10 @@ router.post('/send-forgot-otp', async (req, res) => {
 
     } catch (error) {
 
-        console.log(error.message);
+        console.log("FULL ERROR:");
+        console.log(error);
 
         res.status(500).send("Internal Server Error");
     }
 });
-
 module.exports = router;
