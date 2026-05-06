@@ -9,7 +9,6 @@ const fetchuser = require('../middleware/fetchuser');
 const otpGenerator = require('otp-generator');
 const axios = require('axios');
 const Otp = require('../models/Otp');
-module.exports = router;
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
@@ -131,9 +130,11 @@ router.post('/sendotp', async (req, res) => {
     } else {
 
       await Otp.create({
-        email,
-        otp
-      });
+    email,
+    otp,
+    attempts: 1
+});
+
     }
 
     // SEND PROFESSIONAL EMAIL
@@ -192,6 +193,11 @@ router.post('/sendotp', async (req, res) => {
     }
 );
 
+res.json({
+    success: true,
+    message: "OTP sent successfully"
+});
+
   } catch (error) {
 
     console.error(error);
@@ -231,9 +237,10 @@ router.post('/send-update-otp', fetchuser, async (req, res) => {
 
         // SAVE NEW OTP
         await Otp.create({
-            email,
-            otp
-        });
+    email,
+    otp,
+    attempts: 1
+});
 
         // SEND EMAIL
         await axios.post(
@@ -290,6 +297,11 @@ router.post('/send-update-otp', fetchuser, async (req, res) => {
         }
     }
 );
+
+res.json({
+    success: true,
+    message: "OTP sent successfully"
+});
 
         res.json({
             success: true,
@@ -673,9 +685,10 @@ router.post('/send-forgot-otp', async (req, res) => {
 
         // SAVE OTP
         await Otp.create({
-            email,
-            otp
-        });
+    email,
+    otp,
+    attempts: 1
+});
 
         console.log("STEP 4");
 
@@ -783,6 +796,8 @@ router.post('/send-forgot-otp', async (req, res) => {
                 }
             }
         );
+
+        
 
         console.log("MAIL SENT");
         console.log(response.data);
