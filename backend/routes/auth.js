@@ -27,6 +27,25 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
 
         pass: process.env.EMAIL_PASS
+    },
+
+    connectionTimeout: 10000,
+
+    greetingTimeout: 10000,
+
+    socketTimeout: 10000
+});
+
+transporter.verify(function(error, success) {
+
+    if (error) {
+
+        console.log("SMTP VERIFY ERROR:");
+        console.log(error);
+
+    } else {
+
+        console.log("SMTP SERVER READY");
     }
 });
 // Token Generator
