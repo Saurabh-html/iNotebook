@@ -5,8 +5,9 @@ const {body, validationResult} = require('express-validator');
 const bcrypt = require('bcryptjs')
 var jwt = require('jsonwebtoken');
 const fetchuser = require('../middleware/fetchuser');
-const nodemailer = require('nodemailer');
+// const nodemailer = require('nodemailer');
 const otpGenerator = require('otp-generator');
+const axios = require('axios');
 const Otp = require('../models/Otp');
 module.exports = router;
 
@@ -14,40 +15,6 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
 
-const transporter = nodemailer.createTransport({
-
-    host: "smtp-relay.brevo.com",
-
-    port: 587,
-
-    secure: false,
-
-    auth: {
-
-        user: process.env.EMAIL_USER,
-
-        pass: process.env.EMAIL_PASS
-    },
-
-    connectionTimeout: 10000,
-
-    greetingTimeout: 10000,
-
-    socketTimeout: 10000
-});
-
-transporter.verify(function(error, success) {
-
-    if (error) {
-
-        console.log("SMTP VERIFY ERROR:");
-        console.log(error);
-
-    } else {
-
-        console.log("SMTP SERVER READY");
-    }
-});
 // Token Generator
 const generateAccessToken = (user) => {
 
@@ -170,97 +137,60 @@ router.post('/sendotp', async (req, res) => {
     }
 
     // SEND PROFESSIONAL EMAIL
-    await transporter.sendMail({
+    await axios.post(
 
-      from: `"iNotebook Security" <${process.env.EMAIL_USER}>`,
+    'https://api.brevo.com/v3/smtp/email',
 
-      to: email,
+    {
 
-      subject: "Verify your iNotebook account",
+        sender: {
 
-      html: `
-      <div style="
-        font-family: Arial, sans-serif;
-        background: #f4f7fb;
-        padding: 40px;
-      ">
+            name: 'iNotebook',
 
-        <div style="
-          max-width: 500px;
-          margin: auto;
-          background: white;
-          border-radius: 14px;
-          overflow: hidden;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        ">
+            email: process.env.EMAIL_USER
+        },
 
-          <div style="
-            background: linear-gradient(135deg,#4f46e5,#7c3aed);
-            padding: 30px;
-            text-align: center;
-            color: white;
-          ">
+        to: [
+            {
+                email: email
+            }
+        ],
 
-            <h1 style="margin:0;">iNotebook</h1>
+        subject: 'Password Reset OTP',
 
-            <p style="margin-top:10px;">
-              Secure Email Verification
-            </p>
-
-          </div>
-
-          <div style="padding:35px;">
-
-            <h2>Hello 👋</h2>
-
-            <p>
-              Thank you for creating your iNotebook account.
-            </p>
-
-            <p>
-              Please use the OTP below to verify your email address:
-            </p>
+        htmlContent: `
 
             <div style="
-              text-align:center;
-              margin:30px 0;
+                font-family: Arial;
+                padding: 30px;
             ">
 
-              <span style="
-                display:inline-block;
-                background:#eef2ff;
-                color:#4f46e5;
-                padding:16px 28px;
-                font-size:32px;
-                font-weight:700;
-                border-radius:12px;
-                letter-spacing:8px;
-              ">
-                ${otp}
-              </span>
+                <h2>Password Reset</h2>
+
+                <p>Your OTP is:</p>
+
+                <h1>${otp}</h1>
+
+                <p>
+                    OTP expires in 5 minutes.
+                </p>
 
             </div>
+        `
+    },
 
-            <p>
-              This OTP will expire in <b>5 minutes</b>.
-            </p>
+    {
 
-            <p>
-              If you did not request this, you can safely ignore this email.
-            </p>
+        headers: {
 
-          </div>
+            'accept': 'application/json',
 
-        </div>
+            'api-key': process.env.EMAIL_PASS,
 
-      </div>
-      `
-    });
-
-    res.json({
-      success: true,
-      message: "OTP sent successfully"
-    });
+            'content-type': 'application/json'
+        }
+    }
+);
 
   } catch (error) {
 
@@ -306,82 +236,60 @@ router.post('/send-update-otp', fetchuser, async (req, res) => {
         });
 
         // SEND EMAIL
-        await transporter.sendMail({
+        await axios.post(
 
-            from: `"iNotebook Security" <${process.env.EMAIL_USER}>`,
+    'https://api.brevo.com/v3/smtp/email',
 
-            to: email,
+    {
 
-            subject: "Password Change Verification",
+        sender: {
 
-            html: `
+            name: 'iNotebook',
+
+            email: process.env.EMAIL_USER
+        },
+
+        to: [
+            {
+                email: email
+            }
+        ],
+
+        subject: 'Password Reset OTP',
+
+        htmlContent: `
+
             <div style="
-                font-family: Arial,sans-serif;
-                background:#f4f7fb;
-                padding:40px;
+                font-family: Arial;
+                padding: 30px;
             ">
 
-                <div style="
-                    max-width:500px;
-                    margin:auto;
-                    background:white;
-                    border-radius:16px;
-                    overflow:hidden;
-                    box-shadow:0 10px 30px rgba(0,0,0,0.08);
-                ">
+                <h2>Password Reset</h2>
 
-                    <div style="
-                        background:linear-gradient(135deg,#4f46e5,#7c3aed);
-                        color:white;
-                        text-align:center;
-                        padding:30px;
-                    ">
+                <p>Your OTP is:</p>
 
-                        <h1>iNotebook</h1>
+                <h1>${otp}</h1>
 
-                        <p>Password Update Verification</p>
-
-                    </div>
-
-                    <div style="padding:35px;">
-
-                        <h2>Hello 👋</h2>
-
-                        <p>
-                            Use the OTP below to verify your password update request.
-                        </p>
-
-                        <div style="
-                            text-align:center;
-                            margin:30px 0;
-                        ">
-
-                            <span style="
-                                display:inline-block;
-                                background:#eef2ff;
-                                color:#4f46e5;
-                                padding:16px 28px;
-                                font-size:32px;
-                                font-weight:700;
-                                border-radius:12px;
-                                letter-spacing:8px;
-                            ">
-                                ${otp}
-                            </span>
-
-                        </div>
-
-                        <p>
-                            OTP expires in <b>5 minutes</b>.
-                        </p>
-
-                    </div>
-
-                </div>
+                <p>
+                    OTP expires in 5 minutes.
+                </p>
 
             </div>
-            `
-        });
+        `
+    },
+
+    {
+
+        headers: {
+
+            'accept': 'application/json',
+
+            'api-key': process.env.EMAIL_PASS,
+
+            'content-type': 'application/json'
+        }
+    }
+);
 
         res.json({
             success: true,
@@ -771,22 +679,113 @@ router.post('/send-forgot-otp', async (req, res) => {
 
         console.log("STEP 4");
 
-        // SEND EMAIL
-        const info = await transporter.sendMail({
+        // SEND EMAIL USING BREVO API
+        const response = await axios.post(
 
-            from: process.env.EMAIL_USER,
+            'https://api.brevo.com/v3/smtp/email',
 
-            to: email,
+            {
 
-            subject: "Reset Password OTP",
+                sender: {
 
-            html: `
-                <h2>Your OTP is ${otp}</h2>
-            `
-        });
+                    name: 'iNotebook',
+
+                    email: process.env.EMAIL_USER
+                },
+
+                to: [
+                    {
+                        email: email
+                    }
+                ],
+
+                subject: 'Reset Password OTP',
+
+                htmlContent: `
+
+                    <div style="
+                        font-family: Arial, sans-serif;
+                        background: #f4f7fb;
+                        padding: 40px;
+                    ">
+
+                        <div style="
+                            max-width: 500px;
+                            margin: auto;
+                            background: white;
+                            border-radius: 16px;
+                            overflow: hidden;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+                        ">
+
+                            <div style="
+                                background: linear-gradient(135deg,#4f46e5,#7c3aed);
+                                color: white;
+                                text-align: center;
+                                padding: 30px;
+                            ">
+
+                                <h1>iNotebook</h1>
+
+                                <p>Password Reset Verification</p>
+
+                            </div>
+
+                            <div style="padding: 35px;">
+
+                                <h2>Hello 👋</h2>
+
+                                <p>
+                                    Use the OTP below to reset your password.
+                                </p>
+
+                                <div style="
+                                    text-align:center;
+                                    margin:30px 0;
+                                ">
+
+                                    <span style="
+                                        display:inline-block;
+                                        background:#eef2ff;
+                                        color:#4f46e5;
+                                        padding:16px 28px;
+                                        font-size:32px;
+                                        font-weight:700;
+                                        border-radius:12px;
+                                        letter-spacing:8px;
+                                    ">
+                                        ${otp}
+                                    </span>
+
+                                </div>
+
+                                <p>
+                                    OTP expires in <b>5 minutes</b>.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                `
+            },
+
+            {
+
+                headers: {
+
+                    'accept': 'application/json',
+
+                    'api-key': process.env.EMAIL_PASS,
+
+                    'content-type': 'application/json'
+                }
+            }
+        );
 
         console.log("MAIL SENT");
-        console.log(info);
+        console.log(response.data);
 
         res.json({
             success: true,
@@ -796,7 +795,15 @@ router.post('/send-forgot-otp', async (req, res) => {
     } catch (error) {
 
         console.log("FULL ERROR:");
-        console.log(error);
+
+        if (error.response) {
+
+            console.log(error.response.data);
+
+        } else {
+
+            console.log(error);
+        }
 
         res.status(500).send("Internal Server Error");
     }
