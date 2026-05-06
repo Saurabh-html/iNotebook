@@ -6,12 +6,11 @@ module.exports = function override(config) {
     fs: false,
     path: false,
     os: false,
-    process: require.resolve('process/browser'),
   };
 
   config.plugins.push(
     new webpack.ProvidePlugin({
-      process: 'process/browser',
+      process: 'process/browser.js', 
     })
   );
 
