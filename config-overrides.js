@@ -1,3 +1,5 @@
+const webpack = require('webpack');
+
 module.exports = function override(config) {
   config.resolve.fallback = {
     ...config.resolve.fallback,
@@ -5,5 +7,12 @@ module.exports = function override(config) {
     path: false,
     os: false,
   };
+
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify(process.env)
+    })
+  );
+
   return config;
 };
