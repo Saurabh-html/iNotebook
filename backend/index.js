@@ -1,4 +1,4 @@
-require('dotenv').config(); // ✅ FIXED
+require('dotenv').config();
 
 const connectToMongo = require('./db');
 connectToMongo();
