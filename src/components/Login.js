@@ -3,7 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import config from "../config";
 
 const Login = (props) => {
-  const [credentials, setCredentials] = useState({ email: "", password: "" })
+  const [credentials, setCredentials] = useState({
+    email: "",
+    password: ""
+  });
+
   let navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,6 +25,7 @@ const Login = (props) => {
     });
 
     let json;
+
     try {
       json = await response.json();
     } catch {
@@ -42,47 +47,69 @@ const Login = (props) => {
   }
 
   return (
-    <div className="mt-2">
-      <h2 className="my-3">Login to continue to iNotebook</h2>
+    <div className="auth-page">
+      <div className="auth-card">
 
-      <form onSubmit={handleSubmit}>
-        <div className="my-3">
-          <label className="form-label">Email address</label>
-          <input type="email" className="form-control" name="email" value={credentials.email} onChange={onChange} />
-        </div>
+        <h1 className="auth-title">Welcome Back 👋</h1>
+        <p className="auth-subtitle">
+          Login to continue using iNotebook
+        </p>
 
-        <div className="mb-3">
-          <label className="form-label">Password</label>
-          <input type="password" className="form-control" name="password" value={credentials.password} onChange={onChange} />
-        </div>
+        <form onSubmit={handleSubmit}>
 
-        {/* Forgot Password */}
-        <div className="mb-2">
-          <small
-            style={{ cursor: "pointer", color: "blue" }}
+          <div className="auth-input-group">
+            <i className="fa-solid fa-envelope"></i>
+
+            <input
+              type="email"
+              className="auth-input"
+              placeholder="Enter your email"
+              name="email"
+              value={credentials.email}
+              onChange={onChange}
+              required
+            />
+          </div>
+
+          <div className="auth-input-group">
+            <i className="fa-solid fa-lock"></i>
+
+            <input
+              type="password"
+              className="auth-input"
+              placeholder="Enter your password"
+              name="password"
+              value={credentials.password}
+              onChange={onChange}
+              required
+            />
+          </div>
+
+          <div
+            className="auth-link"
             onClick={() => navigate("/forgotpassword")}
           >
             Forgot Password?
-          </small>
-        </div>
+          </div>
 
-        {/* NEW LINE ADDED 👇 */}
-        <div className="mb-3">
-          <small>
+          <button type="submit" className="auth-btn">
+            Login
+          </button>
+
+          <div className="auth-extra">
             New user?{" "}
             <span
-              style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}
+              className="auth-link"
               onClick={() => navigate("/signup")}
             >
-              Sign Up
+              Create Account
             </span>
-          </small>
-        </div>
+          </div>
 
-        <button type="submit" className="btn btn-primary">Submit</button>
-      </form>
+        </form>
+      </div>
     </div>
   )
 }
 
-export default Login;
+export default Login

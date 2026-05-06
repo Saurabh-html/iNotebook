@@ -46,47 +46,89 @@ const Signup = (props) => {
   }
 
   return (
-    <div className="container mt-2">
-      <h2 className="my-3">Create an account to use iNotebook</h2>
+    <div className="auth-page">
+      <div className="auth-card">
 
-      <form onSubmit={handleSubmit}>
-        <div className="my-3">
-          <label className="form-label">Full Name</label>
-          <input type="text" className="form-control" name="name" onChange={onChange} />
-        </div>
+        <h1 className="auth-title">Create Account 🚀</h1>
 
-        <div className="mb-3">
-          <label className="form-label">Email address</label>
-          <input type="email" className="form-control" name="email" onChange={onChange} />
-        </div>
+        <p className="auth-subtitle">
+          Join iNotebook and organize your ideas beautifully
+        </p>
 
-        <div className="mb-3">
-          <label className="form-label">Password</label>
-          <input type="password" className="form-control" name="password" onChange={onChange} minLength={5} required />
-        </div>
+        <form onSubmit={handleSubmit}>
 
-        <div className="mb-3">
-          <label className="form-label">Confirm Password</label>
-          <input type="password" className="form-control" name="cpassword" onChange={onChange} minLength={5} required />
-        </div>
+          <div className="auth-input-group">
+            <i className="fa-solid fa-user"></i>
 
-        {/* 👇 NEW LOGIN LINK */}
-        <div className="mb-3">
-          <small>
-            Already a user?{" "}
+            <input
+              type="text"
+              className="auth-input"
+              placeholder="Full Name"
+              name="name"
+              onChange={onChange}
+              required
+            />
+          </div>
+
+          <div className="auth-input-group">
+            <i className="fa-solid fa-envelope"></i>
+
+            <input
+              type="email"
+              className="auth-input"
+              placeholder="Email Address"
+              name="email"
+              onChange={onChange}
+              required
+            />
+          </div>
+
+          <div className="auth-input-group">
+            <i className="fa-solid fa-lock"></i>
+
+            <input
+              type="password"
+              className="auth-input"
+              placeholder="Password"
+              name="password"
+              onChange={onChange}
+              minLength={5}
+              required
+            />
+          </div>
+
+          <div className="auth-input-group">
+            <i className="fa-solid fa-shield-halved"></i>
+
+            <input
+              type="password"
+              className="auth-input"
+              placeholder="Confirm Password"
+              name="cpassword"
+              onChange={onChange}
+              minLength={5}
+              required
+            />
+          </div>
+
+          <button type="submit" className="auth-btn">
+            Create Account
+          </button>
+
+          <div className="auth-extra">
+            Already have an account?{" "}
             <span
-              style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}
+              className="auth-link"
               onClick={() => navigate("/login")}
             >
               Login
             </span>
-          </small>
-        </div>
+          </div>
 
-        <button type="submit" className="btn btn-primary">Submit</button>
-      </form>
+        </form>
+      </div>
     </div>
   )
 }
 
-export default Signup;
+export default Signup

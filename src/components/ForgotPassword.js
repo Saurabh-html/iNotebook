@@ -3,7 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import config from "../config";
 
 const ForgotPassword = (props) => {
-  const [data, setData] = useState({ email: "", password: "", cpassword: "" });
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+    cpassword: ""
+  });
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -40,40 +45,74 @@ const ForgotPassword = (props) => {
   };
 
   return (
-    <div className="container mt-2">
-      <h2 className="my-3">Reset Password</h2>
+    <div className="auth-page">
+      <div className="auth-card">
 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label>Email</label>
-          <input type="email" className="form-control" name="email" onChange={onChange} required />
-        </div>
+        <h1 className="auth-title">Reset Password 🔐</h1>
 
-        <div className="mb-3">
-          <label>New Password</label>
-          <input type="password" className="form-control" name="password" onChange={onChange} required />
-        </div>
+        <p className="auth-subtitle">
+          Enter your email and create a new password
+        </p>
 
-        <div className="mb-3">
-          <label>Confirm Password</label>
-          <input type="password" className="form-control" name="cpassword" onChange={onChange} required />
-        </div>
+        <form onSubmit={handleSubmit}>
 
-        <div className="mb-3">
-          <small>
+          <div className="auth-input-group">
+            <i className="fa-solid fa-envelope"></i>
+
+            <input
+              type="email"
+              className="auth-input"
+              placeholder="Email Address"
+              name="email"
+              onChange={onChange}
+              required
+            />
+          </div>
+
+          <div className="auth-input-group">
+            <i className="fa-solid fa-lock"></i>
+
+            <input
+              type="password"
+              className="auth-input"
+              placeholder="New Password"
+              name="password"
+              onChange={onChange}
+              required
+            />
+          </div>
+
+          <div className="auth-input-group">
+            <i className="fa-solid fa-shield-halved"></i>
+
+            <input
+              type="password"
+              className="auth-input"
+              placeholder="Confirm Password"
+              name="cpassword"
+              onChange={onChange}
+              required
+            />
+          </div>
+
+          <button type="submit" className="auth-btn">
+            Update Password
+          </button>
+
+          <div className="auth-extra">
+            Remember your password?{" "}
             <span
-              style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}
+              className="auth-link"
               onClick={() => navigate("/login")}
             >
               Login
             </span>
-          </small>
-        </div>
+          </div>
 
-        <button type="submit" className="btn btn-primary">Update Password</button>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };
 
-export default ForgotPassword;
+export default ForgotPassword
