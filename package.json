@@ -18,9 +18,9 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-  "build": "react-app-rewired build",
-  "test": "react-app-rewired test",
-  "eject": "react-scripts eject",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject",
     "both": "concurrently \"npm run start\" \"npx nodemon backend/index.js\""
   },
   "eslintConfig": {
@@ -42,7 +42,7 @@
     ]
   },
   "devDependencies": {
+    "process": "^0.11.10",
     "react-app-rewired": "^2.2.1"
   }
 }
-
